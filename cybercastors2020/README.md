@@ -10,6 +10,10 @@ https://github.com/cyber-castors/ctf20challenges
 
  - gif
 
+### forensics
+
+ - byte_manipulation
+
 ## Work In Progress
 
 ### misc
