@@ -14,6 +14,10 @@ https://github.com/cyber-castors/ctf20challenges
 
  - byte_manipulation
 
+### crypto
+
+ - goose-chase
+
 ## Work In Progress
 
 ### misc
