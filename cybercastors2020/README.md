@@ -37,7 +37,7 @@ Use of the server was severely hindered by connection issues for most if not all
  - vault0
  - vault1
 
-## Work In Progress
+## In Progress
 
 ### misc
 
