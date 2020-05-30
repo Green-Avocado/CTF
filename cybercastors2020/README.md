@@ -72,6 +72,7 @@ Use of the server was severely hindered by connection issues for most if not all
 ### forensics
 
  - usb
+ - kernel_import
 
 ### pwn
 
