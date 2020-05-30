@@ -1,3 +1,3 @@
 #!/bin/bash
-xxd -r -p pooh.jpg output.bin
+xxd -r pooh.jpg output.jpg
 
