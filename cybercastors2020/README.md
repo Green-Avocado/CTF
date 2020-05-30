@@ -12,6 +12,7 @@ Use of the server was severely hindered by connection issues for most if not all
 
 ### coding
 
+ - arithmetics
  - flag-gods
  - glitchity-glitch
 
@@ -62,7 +63,6 @@ Use of the server was severely hindered by connection issues for most if not all
 
 ### coding
 
- - arithmetics
  - base-runner
 
 ### crypto
