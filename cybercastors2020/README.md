@@ -33,3 +33,8 @@ https://github.com/cyber-castors/ctf20challenges
  - abcbof
  - childbof
 
+### re
+
+ - xor
+ - mapping
+
