@@ -54,6 +54,10 @@ Use of the server was severely hindered by connection issues for most if not all
  - reverse me
  - xor
 
+### web
+
+ - car-lottery
+
 ## Not Started
 
 ### coding
