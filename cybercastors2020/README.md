@@ -39,3 +39,29 @@ https://github.com/cyber-castors/ctf20challenges
  - reverse me
  - xor
 
+## Not Started
+
+### crypto
+
+ - msb
+ - rsa
+ - sigma1
+ - sigma2
+ - stalk-market
+
+### forensics
+
+ - usb
+
+### pwn
+
+ - babybof
+ - babyfmt
+
+### re
+
+ - obfuscating
+ - random
+ - stacking
+ - vault1
+
