@@ -1,6 +1,6 @@
 # CyberCastors CTF 2020
 
-https://gg.cybercastors.com/readme
+https://castorsctf20.ctfd.io/challenges
 
 https://github.com/cyber-castors/ctf20challenges
 
@@ -9,6 +9,11 @@ The list of challenges may not be complete due to differences between the GitHub
 Use of the server was severely hindered by connection issues for most if not all participants of the CTF, so I have chosen to use the GitHub repository as the primary source of challenges.
 
 ## Completed
+
+### coding
+
+ - flag-gods
+ - glitchity-glitch
 
 ### crypto
 
