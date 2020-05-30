@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import binascii
 
 with open('two-paths.png', 'rb') as f:
