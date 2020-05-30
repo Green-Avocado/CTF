@@ -27,7 +27,7 @@ Use of the server was severely hindered by connection issues for most if not all
 
  - gif
 
-### re
+### reversing
 
  - vault0
  - vault1
@@ -43,13 +43,18 @@ Use of the server was severely hindered by connection issues for most if not all
  - abcbof
  - childbof
 
-### re
+### reversing
 
  - mapping
  - reverse me
  - xor
 
 ## Not Started
+
+### coding
+
+ - arithmetics
+ - base-runner
 
 ### crypto
 
@@ -68,7 +73,7 @@ Use of the server was severely hindered by connection issues for most if not all
  - babybof
  - babyfmt
 
-### re
+### reversing
 
  - obfuscating
  - random
