@@ -35,6 +35,7 @@ https://github.com/cyber-castors/ctf20challenges
 
 ### re
 
- - xor
  - mapping
+ - reverse me
+ - xor
 
