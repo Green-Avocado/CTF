@@ -57,6 +57,7 @@ Use of the server was severely hindered by connection issues for most if not all
 ### pwn
 
  - babybof pt2
+ - babyfmt
  - childbof
 
 ### reversing
@@ -86,10 +87,6 @@ Use of the server was severely hindered by connection issues for most if not all
 ### forensics
 
  - kernel_import
-
-### pwn
-
- - babyfmt
 
 ### reversing
 
