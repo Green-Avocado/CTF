@@ -22,7 +22,7 @@ Use of the server was severely hindered by connection issues for most if not all
 
 ### forensics
 
- - byte_manipulation
+ - usb
 
 ### general
 
@@ -39,6 +39,10 @@ Use of the server was severely hindered by connection issues for most if not all
  - vault1
 
 ## In Progress
+
+### forensics
+
+ - byte_manipulation
 
 ### misc
 
@@ -75,7 +79,6 @@ Use of the server was severely hindered by connection issues for most if not all
 
 ### forensics
 
- - usb
  - kernel_import
 
 ### pwn
