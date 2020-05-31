@@ -33,10 +33,16 @@ Use of the server was severely hindered by connection issues for most if not all
 
  - gif
 
+### pwn
+
+ - abcbof
+ - babybof pt1
+
 ### reversing
 
  - vault0
  - vault1
+ - stacking
 
 ## In Progress
 
@@ -50,7 +56,7 @@ Use of the server was severely hindered by connection issues for most if not all
 
 ### pwn
 
- - abcbof
+ - babybof pt2
  - childbof
 
 ### reversing
@@ -83,12 +89,10 @@ Use of the server was severely hindered by connection issues for most if not all
 
 ### pwn
 
- - babybof
  - babyfmt
 
 ### reversing
 
  - obfuscating
  - random
- - stacking
 
