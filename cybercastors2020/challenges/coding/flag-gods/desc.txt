@@ -1,0 +1,4 @@
+The flag gods are trying to tell you something...
+
+nc chals20.cybercastors.com 14431
+
