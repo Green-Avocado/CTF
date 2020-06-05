@@ -1,0 +1,6 @@
+https://georgeom.net/StegOnline/upload
+
+Extract data
+    default settings
+    RGB: 0, 0, 0
+
