@@ -31,7 +31,7 @@ Compares two values of equal length in binary.
 If two values at the same index are equal (i.e. both ```0``` or both ```1```), the resulting value at that index is ```0```.
 If the values are different, the resulting value at that index is ```1```.
 
-e.g. ```xor f0, aa
+e.g. ```xor f0, aa```
 
 ```
 11110000
