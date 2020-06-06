@@ -21,6 +21,9 @@ I've chosen to focus on challenges in which I felt I learned a lot, or ones that
 
 ### reverse engineering
 
+I decided against including the vault challenges, as they seemed pretty straightforward.
+Instead, I've decided to focus on the asm challenges that I was able to solve, as this was my introduction to reversing binaries.
+
  - [asm1](./writeups/reverse-engineering/asm1)
  - [asm2](./writeups/reverse-engineering/asm2)
  - [asm3](./writeups/reverse-engineering/asm3)
