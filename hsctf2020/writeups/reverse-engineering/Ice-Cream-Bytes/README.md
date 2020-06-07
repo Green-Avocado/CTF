@@ -212,7 +212,7 @@ Working our way through the ```chocolateShuffle()``` function logically, we'd se
 6 3 0 5 2 7 4 1
 ```
 
-The function simply moves even indicies 2 places to the right, and odd ones two indicies to the left, wrapping where necessary.
+The function simply moves even indicies 2 places to the right, and odd ones 2 places to the left, wrapping where necessary.
 
 We can reverse this process fairly simply by modifying the existing function to shift these values the opposite direction, again wrapping where necessary.
 
