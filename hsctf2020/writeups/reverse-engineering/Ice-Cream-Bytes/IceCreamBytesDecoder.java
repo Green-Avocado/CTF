@@ -104,7 +104,7 @@ public class IceCreamBytesDecoder {
         return outputIceCream;
     }
 
-    public static byte[] dechocolateShuffle(byte[] inputIceCream) { //rearrange WIP
+    public static byte[] dechocolateShuffle(byte[] inputIceCream) { //rearrange
         byte[] outputIceCream = new byte[inputIceCream.length];
         for (int i = 0; i < outputIceCream.length; i++) {
             if (i % 2 == 0) {
