@@ -8,10 +8,6 @@ https://ctf.hsctf.com/challenges
 
  - [Boredom](./writeups/binary-exploit/Boredom)
 
-### forensics
-
- - [Mad Libs](./writeups/forensics/Mad-Libs)
-
 ### misc
 
  - [Bored Out of my Mined](./writeups/misc/Bored-Out-of-my-Mined)
