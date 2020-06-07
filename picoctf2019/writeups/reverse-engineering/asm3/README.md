@@ -45,7 +45,7 @@ e.g. ```xor f0, aa```
 Performs a bitwise shift towards the left on the first operand.
 The amount by which the first argument is shifted depends on the value of the second operand.
 
-e.g. ```shl eax, 0x3 //where eax contains 10101010```
+e.g. ```shl eax, 0x3 ; where eax contains 10101010```
 
 ```
 10101010
