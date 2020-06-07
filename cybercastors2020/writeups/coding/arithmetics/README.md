@@ -198,5 +198,7 @@ f.write(flagFileContents)
 f.close()
 ```
 
-Flag: ```castorsCTF(n00b_pyth0n_4r17hm3t1c5}```
+## Flag
+
+```castorsCTF(n00b_pyth0n_4r17hm3t1c5}```
 

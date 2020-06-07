@@ -71,5 +71,7 @@ f.write(flagFileContents)
 f.close()
 ```
 
-Flag: ```castorsCTF{$imPl3_sTUph_3h?}```
+## Flag
+
+```castorsCTF{$imPl3_sTUph_3h?}```
 
