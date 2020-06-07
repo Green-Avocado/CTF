@@ -1,11 +1,10 @@
 #!/usr/bin/python
 
-def unshift(encrypted, shift):
+def unshift(encrypted):
     ret = ""
     for i in range(len(encrypted)):
-        ret += chr(ord(encrypted[i]) + i - shift)
+        ret += chr(ord(encrypted[i]) + i - len(str(ord(encrypted[i]))))
     return ret
 
-print(unshift("inagzgkpm)Wl&Tg&io", 2))
-print(unshift("inagzgkpm)Wl&Tg&io", 3))
+print(unshift("inagzgkpm)Wl&Tg&io"))
 
