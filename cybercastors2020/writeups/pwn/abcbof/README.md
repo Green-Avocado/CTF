@@ -90,7 +90,7 @@ As you can see, it opens the flag file and reads it one character at a time usin
 With this in mind, we note the address of the function, which is ```0x00400727```.
 We then proceed to disassembling the ```main``` function.
 
-```
+```asm
 [0x00400640]> pdf @ main
             ; DATA XREF from entry0 @ 0x40065d
 ┌ 100: int main (int argc, char **argv, char **envp);
