@@ -10,7 +10,7 @@ https://ctf.hsctf.com/challenges
 
 ### forensics
 
- - [Mad-Libs](./writeups/forensics/Mad Libs)
+ - [Mad Libs](./writeups/forensics/Mad Libs)
 
 ### misc
 
@@ -19,7 +19,7 @@ https://ctf.hsctf.com/challenges
 
 ### reverse engineering
 
- - [AP Lab: Computer Science Principles](./writeups/reverse-engineering/AP Lab: Computer Science Principles)
+ - [AP Lab: Computer Science Principles](./writeups/reverse-engineering/Computer-Science-Principles)
  - [AP Lab: English Language](./writeups/reverse-engineering/AP Lab: English Langage)
  - [Ice Cream Bytes](./writeups/reverse-engineering/Ice Cream Bytes)
  - [Recursion Reverse](./writeups/reverse-engineering/Recursion Reverse)
