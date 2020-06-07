@@ -10,7 +10,7 @@ https://ctf.hsctf.com/challenges
 
 ### forensics
 
- - [Mad Libs](./writeups/forensics/Mad Libs)
+ - [Mad-Libs](./writeups/forensics/Mad Libs)
 
 ### misc
 
