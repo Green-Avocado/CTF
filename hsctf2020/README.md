@@ -15,7 +15,7 @@ https://ctf.hsctf.com/challenges
 ### reverse engineering
 
  - [AP Lab: Computer Science Principles](./writeups/reverse-engineering/Computer-Science-Principles)
- - [AP Lab: English Language](./writeups/reverse-engineering/English-Langage)
+ - [AP Lab: English Language](./writeups/reverse-engineering/English-Language)
  - [Ice Cream Bytes](./writeups/reverse-engineering/Ice-Cream-Bytes)
  - [Recursion Reverse](./writeups/reverse-engineering/Recursion-Reverse)
 
