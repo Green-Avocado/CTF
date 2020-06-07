@@ -1,10 +1,10 @@
 # asm1 - Points: 200
 
-## description
+## Description
 
 What does asm1(0x1f3) return? Submit the flag as a hexadecimal value (starting with '0x'). NOTE: Your submission for this question will NOT be in the normal flag format. [Source](./test.S) located in the directory at /problems/asm1_2_4ced82d316c06cd3a46ba3bda9f6c144.
 
-## solution
+## Solution
 
 We're given some assembly code and an argument.
 Recall that the call stack looks something like this:
@@ -16,7 +16,7 @@ ebp+4 Return Address
 ebp+8 Arguments
 ```
 
-Therefore, we know that the argument will be located at ebp+8 in the code below.
+Therefore, we know that the argument will be located at ```ebp+8``` in the code below.
 
 ```asm
 asm1:
@@ -89,5 +89,7 @@ This next address is where the ```pop``` and ```ret``` instructions are, effecti
 
 As the last value stored in eax was 0x1f3, this is our return value.
 
-Flag: ```0x1f3```
+## Flag
+
+```0x1f3```
 

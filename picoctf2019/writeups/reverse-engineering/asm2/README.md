@@ -1,18 +1,18 @@
 # asm2 - Points: 250
 
-## description
+## Description
 
 What does asm2(0x10,0x18) return? Submit the flag as a hexadecimal value (starting with '0x'). NOTE: Your submission for this question will NOT be in the normal flag format. [Source](./test.S) located in the directory at /problems/asm2_0_a50f0b17a6f50b50a53305ebd71af535.
 
-## solution
+## Solution
 
 This challenge is very similar to asm1, however, this time we have a second argument as well as local variables to keep in mind.
 
 Arguments are stored as DWORDs, or 32 bits, regardless of their value and the fact that they only use 16 bits each in this example.
-Therefore, the first argument includes ebp+0x8 through ebp+0xb, as with asm1.
-The second argument includes ebp+0xc through ebp+0xf.
+Therefore, the first argument includes ```ebp+0x8``` through ```ebp+0xb```, as with asm1.
+The second argument includes ```ebp+0xc``` through ```ebp+0xf```.
 
-Local variables can be stored anywhere between esp and ebp, hence why this example includes an instruction to subtract 0x10 from esp to make room for local variables..
+Local variables can be stored anywhere between ```esp``` and ```ebp```, hence why this example includes an instruction to subtract 0x10 from ```esp``` to make room for local variables..
 
 ```asm
 asm2:
@@ -35,14 +35,14 @@ asm2:
 
 The first three instructions are responsible for creating the call stack.
 
-The second argument is then stored in eax and transfered to a local variable at ebp-0x4.
+The second argument is then stored in eax and transfered to a local variable at ```ebp-0x4```.
 
 ```asm
 	<+6>:	mov    eax,DWORD PTR [ebp+0xc]
 	<+9>:	mov    DWORD PTR [ebp-0x4],eax
 ```
 
-The first argument is stored in eax and transfered to a local variable at ebp-0x8.
+The first argument is stored in eax and transfered to a local variable at ```ebp-0x8```.
 
 ```asm
 	<+12>:	mov    eax,DWORD PTR [ebp+0x8]
@@ -50,9 +50,9 @@ The first argument is stored in eax and transfered to a local variable at ebp-0x
 ```
 
 We make a jump to ```<asm2+31>```.
-The instruction at this address compares the value at ebp-0x8, our first argument, to 0xb693.
-If the variable is less than this value, we jump back to ```<asm2+20>``` which has instructions to add 0x1 to the value at ebp-0x4, and add 0xcb to the value at ebp-0x8.
-Afterwards, it reaches the compare instruction at ```<asm2+31>``` again and repeats until the value at ebp-0x8 is greater than 0xb693.
+The instruction at this address compares the value at ```ebp-0x8```, our first argument, to 0xb693.
+If the variable is less than this value, we jump back to ```<asm2+20>``` which has instructions to add 0x1 to the value at ```ebp-0x4```, and add 0xcb to the value at ```ebp-0x8```.
+Afterwards, it reaches the compare instruction at ```<asm2+31>``` again and repeats until the value at ```ebp-0x8``` is greater than 0xb693.
 
 ```asm
 	<+18>:	jmp    0x50c <asm2+31>
@@ -95,7 +95,7 @@ Python is useful when performing calculations using hexadecimal values:
 231
 ```
 
-We can see that the loop will execute 231 times, which means that we will be adding 0x1 * 231 to the variable at ebp-04.
+We can see that the loop will execute 231 times, which means that we will be adding 0x1 * 231 to the variable at ```ebp-04```.
 
 ```py
 >>> 0x18 + 231
@@ -104,7 +104,7 @@ We can see that the loop will execute 231 times, which means that we will be add
 '0xff'
 ```
 
-Once the loop is finished, we move the value at ebp-0x4, which is 0xff, into the eax register and return this value.
+Once the loop is finished, we move the value at ```ebp-0x4```, which is 0xff, into the ```eax``` register and return this value.
 
 ```asm
 	<+40>:	mov    eax,DWORD PTR [ebp-0x4]
@@ -112,5 +112,7 @@ Once the loop is finished, we move the value at ebp-0x4, which is 0xff, into the
 	<+44>:	ret
 ```
 
-Flag: ```0xff```
+## Flag
+
+```0xff```
 

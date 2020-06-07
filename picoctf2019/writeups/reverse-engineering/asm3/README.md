@@ -6,7 +6,7 @@ What does asm3(0xc4bd37e3,0xf516e15e,0xeea4f333) return? Submit the flag as a he
 
 ## solution
 
-In order to understand this code, we need to understand how the EAX register is structured.
+In order to understand this code, we need to understand how the ```eax``` register is structured.
 The register is subdivided as follows:
 
 ```
@@ -73,15 +73,15 @@ asm3:
 	<+24>:	ret
 ```
 
-We can see that the function ```xor```s eax with itself.
+We can see that the function ```xor```s ```eax``` with itself.
 This essentially clears the register, setting every bit to ```0```.
 
-It moved the byte at ebp+0x9 to the ah register, then performs a bitwise shift on the ax register, 16 bits to the left.
-Recall that the ah register is part of the ax register, and that the ax register is only 16 bits.
+It moved the byte at ```ebp+0x9``` to the ```ah``` register, then performs a bitwise shift on the ```ax``` register, 16 bits to the left.
+Recall that the ```ah``` register is part of the ```ax``` register, and that the ```ax``` register is only 16 bits.
 This ```shl``` instruction will essentially clear the register as well.
 
-We subtract the value at ebp+0xe from the al register.
-The al register is 0, and the value at ebp+0xd is 0xe1 (second argument starts at ebp+0xc, while ebp+0xd is the second byte of this argument).
+We subtract the value at ```ebp+0xe``` from the ```al``` register.
+The ```al``` register is 0, and the value at ```ebp+0xd``` is 0xe1 (second argument starts at ```ebp+0xc```, while ```ebp+0xd``` is the second byte of this argument).
 The subtraction equation looks something like this:
 
 ```
@@ -100,16 +100,16 @@ To perform this operation, the program carries a 1 and sets the carry flag to 1 
    00011111
 ```
 
-This value, 0xf1, is stored in the al register.
+This value, 0xf1, is stored in the ```al``` register.
 
-Next we add the byte at ebp+0xe to the ah register.
+Next we add the byte at ```ebp+0xe``` to the ```ah``` register.
 This byte is the third byte of the second argument, which is 0x16.
 
-Since the ah register was empty, this is the same as moving the value into the register.
+Since the ```ah``` register was empty, this is the same as moving the value into the register.
 
-The ax register now contains 0x161f.
+The ```ax``` register now contains 0x161f.
 
-The next step is to ```xor``` this value with the WORD at ebp+0x10.
+The next step is to ```xor``` this value with the WORD at ```ebp+0x10```.
 
 ebp+0x10 is the first address of the third argument, 0xeea4f333.
 Since these arguments are stored in little endian, the first two bytes are going to be 0x33 and 0xf3.
@@ -122,11 +122,11 @@ We can use python to perform the ```xor``` operation:
 '0xe52c'
 ```
 
-As we can see, 0xe52c will be stored in the ax register when this is finished.
+As we can see, 0xe52c will be stored in the ```ax``` register when this is finished.
 
 The next instruction is a ```nop```, which does nothing, and we can move on.
-Here the function returns to the caller, so the return value will be whatever is stored in the eax register.
-As the ax register is the less significant part of eax, and the other bits are zeroed, the return value is the value of the ax register.
+Here the function returns to the caller, so the return value will be whatever is stored in the ```eax``` register.
+As the ```ax``` register is the less significant part of ```eax```, and the other bits are zeroed, the return value is equal to the value of the ```ax``` register.
 
 Flag: ```0xe52c```
 
