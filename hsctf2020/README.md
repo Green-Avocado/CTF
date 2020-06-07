@@ -10,7 +10,6 @@ https://ctf.hsctf.com/challenges
 
 ### misc
 
- - [Bored Out of my Mined](./writeups/misc/Bored-Out-of-my-Mined)
  - [My First Calculator](./writeups/misc/My-First-Calculator)
 
 ### reverse engineering
