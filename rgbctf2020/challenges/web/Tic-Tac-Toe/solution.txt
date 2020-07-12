@@ -1,0 +1,5 @@
+middle-centre,
+bottom-left,
+bottom-centre,
+top-centre
+
