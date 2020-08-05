@@ -70,7 +70,7 @@ The function involves 2 local unsigned integers, which I have labeled `a` and `b
 No arguments are taken, and the function typecasts `a` to an unsigned long integer and returns this value.
 
 The value of `a` is set to `0` at the start of the function, and is incremented by `1` until `a` is equal to or greater than `0x265d1d23`.
-Using this information, we know that the value of `a` when it is returned will be `9x265d1d23`.
+Using this information, we know that the value of `a` when it is returned will be `0x265d1d23`.
 The other variable, `b`, is used only to increase the runtime of the program, and can be safely ignored for the purpose of reversing this binary.
 
 Now let's look at the `win` function:
