@@ -10,6 +10,8 @@ nc 2020.redpwnc.tf 31039
 
 ## Solution
 
+We're given a binary which, when decompiled with Ghidra, produces the following functions:
+
 ```c
 int main(void)
 
@@ -72,7 +74,22 @@ void print_flag(void)
 }
 ```
 
+The program contains an array of 10 integers which need to be sorted by the user in order to have the flag printed.
+The values of these integers can be easily determined by printing them while debugging using GDB.
+They are as follows:
+
+```[1, 10, 3, 2, 5, 9, 8, 7, 4, 6]```
+
+As we can see from the `main` function, the program takes the lesser index of a pair as user input and swaps the element at that index with the element with an index of 1 greater than that indicated by the user.
+
+If the user enters an index greater than 8, the sorting phase finishes and the program attempts to verify that the list is in ascending order, in which case, it prints the flag.
+
+The solution to this is quite simple, as the user can sort the array by hand and manually input the numbers, or a generic bubble sort script can be used, where the required numbers are recorded and piped into the program.
+
 ## Script
+
+This python script is a generic bubbly sort algorithm with the original array hard-coded in.
+A slight modification has been made where the lesser index of the pair is being recorded during each swap so it can be printed at the end.
 
 ```py
 #!/usr/bin/python
@@ -97,6 +114,14 @@ while notSorted(nums):
 
 print(sequence + '9')
 ```
+
+The above script will print the following sequence:
+
+```
+1 2 3 4 5 6 7 8 1 4 5 6 7 4 5 6 4 5 3 9
+```
+
+This shell script simply runs the python script and pipes the output into the challenge program through netcat.
 
 ```sh
 #!/bin/bash
