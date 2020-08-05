@@ -125,6 +125,8 @@ At the end of the function, a string is printed from the stack with a length of 
 
 When writing the solve script, it is important that the "junk" variables are placed in the same location in the stack relative to the `flag` variable.
 
+## Script
+
 ```c
 #include <stdio.h>
 
@@ -171,6 +173,8 @@ The above script has been written to be identical to the original binary when in
 This is by far NOT the most efficient way this program could have been written.
 
 Running the above script will produce the flag in a relatively short amount of time.
+
+## Alternative Solution
 
 Alternatively, once the program is understood, the flag can be reverse engineered without recreating its functions.
 
