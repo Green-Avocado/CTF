@@ -72,6 +72,38 @@ void print_flag(void)
 }
 ```
 
+## Script
+
+```py
+#!/usr/bin/python
+
+def notSorted(arr):
+    for n in range(len(arr)-1):
+        if arr[n] > arr[n+1]:
+            return True
+
+    return False
+
+nums = [1, 10, 3, 2, 5, 9, 8, 7, 4, 6]
+sequence = ''
+
+while notSorted(nums):
+    for n in range(len(nums)-1):
+        if nums[n] > nums[n+1]:
+            sequence += str(n) + ' '
+            temp = nums[n]
+            nums[n] = nums[n+1]
+            nums[n+1] = temp
+
+print(sequence + '9')
+```
+
+```sh
+#!/bin/bash
+
+python solver.py | nc 2020.redpwnc.tf 31039
+```
+
 ## Flag
 
 ```flag{4ft3r_y0u_put_u54c0_0n_y0ur_c011ege_4pp5_y0u_5t1ll_h4ve_t0_d0_th15_57uff}```
