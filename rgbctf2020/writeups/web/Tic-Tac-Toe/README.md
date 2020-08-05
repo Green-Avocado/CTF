@@ -22,11 +22,11 @@ This is purely due to the fact that certain tiles are considered before others a
 A winning sequence of moves is as follows:
 
 ```
- | |     o| |     o| |o    o|x|o
--+-+-    -+-+-    -+-+-    -+-+-
- |x|  ->  |x|  ->  |x|  ->  |x| 
--+-+-    -+-+-    -+-+-    -+-+-
- | |     x| |     x|x|     x|x|o
+   |   |          o |   |          o |   | o        o | x | o 
+---+---+---      ---+---+---      ---+---+---      ---+---+---
+   | x |     ->     | x |     ->     | x |     ->     | x |   
+---+---+---      ---+---+---      ---+---+---      ---+---+---
+   |   |          x |   |          x | x |          x | x | o 
 ```
 
 Observe that the computer is able to win by the player's 3rd move, however, chooses to block the player in the bottom-right corner.
