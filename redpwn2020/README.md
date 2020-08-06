@@ -7,8 +7,8 @@ https://2020.redpwn.net/
 ### pwn
 
  - [coffer-overflow-0](./writeups/pwn/coffer-overflow-0)
- - [coffer-overflow-1](./writeups/pwn/coffer-overflow-0)
- - [coffer-overflow-2](./writeups/pwn/coffer-overflow-0)
+ - [coffer-overflow-1](./writeups/pwn/coffer-overflow-1)
+ - [coffer-overflow-2](./writeups/pwn/coffer-overflow-2)
  - [secret-flag](./writeups/pwn/secret-flag)
 
 ### rev
