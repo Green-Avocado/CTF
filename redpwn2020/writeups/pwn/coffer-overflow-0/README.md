@@ -8,6 +8,9 @@ Can you fill up the coffers? We even managed to find the source for you.
 
 ## Solution
 
+We're given a binary and source code.
+Disassembling the source code gives us the following:
+
 ```asm
 [0x00400590]> aaa
 [x] Analyze all flags starting with sym. and entry0 (aa)
