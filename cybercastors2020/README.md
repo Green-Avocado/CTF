@@ -15,7 +15,7 @@ https://github.com/cyber-castors/ctf20challenges
 ### pwn
 
  - [abcbof](./writeups/pwn/abcbof)
- - [babybof pt1](./writeups/pwn/babybof)
+ - [babybof pt1](./writeups/pwn/babybof-pt1)
 
 ### reversing
 
