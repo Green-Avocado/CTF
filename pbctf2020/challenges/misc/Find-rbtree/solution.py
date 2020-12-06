@@ -28,7 +28,7 @@ def getGuess(people):
     a = dict(Counter(guesses))
     
     for i, j in a.items():
-        a[i] = abs(j - len(people)/2)
+        a[i] = abs(2 * j - len(people))
 
     b = min(a.items(), key=operator.itemgetter(1))[0]
 
