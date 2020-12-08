@@ -6,6 +6,7 @@ This repository contains a collection of my attempts on CTF challenges, as well 
 
 ### 2020
 
+ - [pbctf](./pbctf2020)
  - [rgbctf](./rgbctf2020)
  - [redpwnCTF](./redpwn2020)
  - [HSCTF](./hsctf2020)
