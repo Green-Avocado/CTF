@@ -1,4 +1,4 @@
-# rgbCTF 2020
+# rgbctf 2020
 
 https://ctf.rgbsec.xyz/challenges (Dead link)
 
