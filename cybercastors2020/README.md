@@ -8,18 +8,18 @@ https://github.com/cyber-castors/ctf20challenges
 
 ### coding
 
- - [arithmetics](./writeups/coding/arithmetics)
- - [flag-gods](./writeups/coding/flag-gods)
- - [glitchity-glitch](./writeups/coding/glitchity-glitch)
+ - [arithmetics](./coding/arithmetics)
+ - [flag-gods](./coding/flag-gods)
+ - [glitchity-glitch](./coding/glitchity-glitch)
 
 ### pwn
 
- - [abcbof](./writeups/pwn/abcbof)
- - [babybof pt1](./writeups/pwn/babybof-pt1)
+ - [abcbof](./pwn/abcbof)
+ - [babybof pt1](./pwn/babybof-pt1)
 
 ### reversing
 
- - [stacking](./writeups/reversing/stacking)
- - [vault0](./writeups/reversing/vault0)
- - [vault1](./writeups/reversing/vault1)
+ - [stacking](./reversing/stacking)
+ - [vault0](./reversing/vault0)
+ - [vault1](./reversing/vault1)
 

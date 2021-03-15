@@ -1,4 +1,0 @@
-NotDeGhost
-
-It's not just a string, it's a rope!
-

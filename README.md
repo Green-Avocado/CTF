@@ -4,6 +4,10 @@ This repository contains a collection of my attempts on CTF challenges, as well 
 
 ## Past Events:
 
+### 2021
+
+ - [UTCTF](./utctf2021)
+
 ### 2020
 
  - [pbctf](./pbctf2020)

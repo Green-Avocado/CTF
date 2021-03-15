@@ -1,1 +1,0 @@
-flag{please_use_python3}

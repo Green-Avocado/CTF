@@ -6,9 +6,9 @@ https://ctf.rgbsec.xyz/challenges (Dead link)
 
 ### pwn/rev
 
- - [Too Slow](./writeups/pwn-rev/Too-Slow)
+ - [Too Slow](./pwn-rev/Too-Slow)
 
 ### web
 
- - [Tic Tac Toe](./writeups/web/Tic-Tac-Toe)
+ - [Tic Tac Toe](./web/Tic-Tac-Toe)
 

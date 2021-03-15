@@ -6,13 +6,13 @@ https://2020.redpwn.net/
 
 ### pwn
 
- - [coffer-overflow-0](./writeups/pwn/coffer-overflow-0)
- - [coffer-overflow-1](./writeups/pwn/coffer-overflow-1)
- - [coffer-overflow-2](./writeups/pwn/coffer-overflow-2)
- - [secret-flag](./writeups/pwn/secret-flag)
+ - [coffer-overflow-0](./pwn/coffer-overflow-0)
+ - [coffer-overflow-1](./pwn/coffer-overflow-1)
+ - [coffer-overflow-2](./pwn/coffer-overflow-2)
+ - [secret-flag](./pwn/secret-flag)
 
 ### rev
 
- - [bubbly](./writeups/rev/bubbly)
- - [ropes](./writeups/rev/ropes)
+ - [bubbly](./rev/bubbly)
+ - [ropes](./rev/ropes)
 

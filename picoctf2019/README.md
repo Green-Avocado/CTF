@@ -12,19 +12,19 @@ I've chosen to focus on challenges in which I felt I learned a lot, or ones that
 
 ### binary exploitation
 
- - [practice-run-1](./writeups/binary-exploitation/practice-run-1)
- - [handy-shellcode](./writeups/binary-exploitation/handy-shellcode)
- - [OverFlow-0](./writeups/binary-exploitation/OverFlow-0)
- - [OverFlow-1](./writeups/binary-exploitation/OverFlow-1)
- - [OverFlow-2](./writeups/binary-exploitation/OverFlow-2)
- - [NewOverFlow-1](./writeups/binary-exploitation/NewOverFlow-1)
+ - [practice-run-1](./binary-exploitation/practice-run-1)
+ - [handy-shellcode](./binary-exploitation/handy-shellcode)
+ - [OverFlow-0](./binary-exploitation/OverFlow-0)
+ - [OverFlow-1](./binary-exploitation/OverFlow-1)
+ - [OverFlow-2](./binary-exploitation/OverFlow-2)
+ - [NewOverFlow-1](./binary-exploitation/NewOverFlow-1)
 
 ### reverse engineering
 
 I decided against including the vault challenges, as they seemed pretty straightforward.
 Instead, I've decided to focus on the asm challenges that I was able to solve, as this was my introduction to reversing binaries.
 
- - [asm1](./writeups/reverse-engineering/asm1)
- - [asm2](./writeups/reverse-engineering/asm2)
- - [asm3](./writeups/reverse-engineering/asm3)
+ - [asm1](./reverse-engineering/asm1)
+ - [asm2](./reverse-engineering/asm2)
+ - [asm3](./reverse-engineering/asm3)
 

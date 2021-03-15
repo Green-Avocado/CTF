@@ -1,1 +1,0 @@
-testFLAG{123abc}

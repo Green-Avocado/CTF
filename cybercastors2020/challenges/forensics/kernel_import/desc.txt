@@ -1,4 +1,0 @@
-We found a thumb drive lying on the floor. Luckily, it wasn't a rubber ducky or contain a ransomware; either way, we're still suspicious. We already went ahead and created the image, help us by analyzing it.
-
-https://bit.ly/2ZQEZyb
-

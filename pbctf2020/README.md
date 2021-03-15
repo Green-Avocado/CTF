@@ -6,5 +6,5 @@ https://ctf.perfect.blue/
 
 ### misc
 
- - [Find rbtree](./writeups/misc/Find-rbtree)
+ - [Find rbtree](./misc/Find-rbtree)
 

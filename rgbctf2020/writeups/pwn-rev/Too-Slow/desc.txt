@@ -1,5 +1,0 @@
-I've made this flag decryptor! It's super secure, but it runs a little slow.
-
-
-~ungato#3536
-
