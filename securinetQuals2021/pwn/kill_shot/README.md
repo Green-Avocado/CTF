@@ -221,7 +221,7 @@ undefined8 main(void)
 
 ## Exploit
 
-```
+```py
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # This exploit template was generated via:
