@@ -4,7 +4,7 @@ This repository contains a collection writeups for CTF challenges.
 
 ### 2021
 
- - [SecurinetQuals2k21](./securinetQuals2021)
+ - [SecurinetQuals2K21](./securinetQuals2021)
  - [UTCTF](./utctf2021)
 
 ### 2020

@@ -1,4 +1,4 @@
-# SecurinetQuals2k21
+# SecurinetQuals2K21
 
 https://www.ctfsecurinets.com/
 
