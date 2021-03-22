@@ -1,6 +1,6 @@
 # CTF attempts and writeups
 
-This repository contains a collection writeups for CTF challenges.
+This repository contains a collection of writeups for CTF challenges.
 
 ### 2021
 
