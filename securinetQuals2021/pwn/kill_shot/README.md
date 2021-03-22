@@ -219,6 +219,26 @@ undefined8 main(void)
 
 ## Solution
 
+Using the `printf` vulnerability, it is possible to leak the stored RBP and return address for `fcn.00000fe3`, as well as the return address for `main`.
+This, using the offsets provided in the binaries, will give us the base addresses of the binary and libc, as well as a stack address.
+
+The `sym.kill` function takes an address as an unsigned long integer, and allows us to write an arbitrary 8 bytes to this address.
+This is not long enough for a ROP chain, and we cannot use a one gadget due to seccomp rules.
+However, we can use this to overwrite the `malloc` and `free` hooks, allowing us to execute existing code when either of these functions are called.
+
+`__malloc_hook` replaces the return value of `malloc` with that of the hook function.
+However, the program relies on the return value of `malloc` to write to the heap, and may stop working as expected if replaced by some other value.
+On the other hand, while `__free_hook` also replaces the return value of `free`, this value is not used by the program, therefore, we can overwrite this hook to redirect program execution.
+
+By pointing `__free_hook` at `sym.kill`, we can write as many bytes as we want to whatever addresses we want by repeatedly calling `free` through `fcn.00000f11`.
+The program does check that there is a valid pointer to free, so we have to call `fcn.00000e08` every time before we call free.
+We also need to call `fcn.00000e08` once more at the start, before we write our ROP chain, due to an off-by-one bug which prevents us from freeing the first chunk.
+
+Once we are able to write a ROP chain, we are still limited by the seccomp rules.
+We are told the location of the flag, and the inclusion of the `openat` syscall allows us to read an arbitrary file.
+Additionally, we can simplify our payload through the `mprotect` syscall, which has also been whitelisted.
+This allows us to bypass the NX mitigation by changing the permissions of a page to RWX, allowing us to execute arbitrary shellcode.
+
 ## Exploit
 
 ```py
