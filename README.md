@@ -6,6 +6,7 @@ This repository contains a collection of my attempts on CTF challenges, as well 
 
 ### 2021
 
+ - [SecurinetQuals2k21](./securinetQuals2021)
  - [UTCTF](./utctf2021)
 
 ### 2020
