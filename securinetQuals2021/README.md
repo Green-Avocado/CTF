@@ -12,7 +12,3 @@ https://www.ctfsecurinets.com/
 
  - [kill_shot](./pwn/kill_shot)
 
-### rev
-
- - [Little Baby Rev](./rev/LittleBabyRev)
-
