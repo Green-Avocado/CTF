@@ -90,7 +90,7 @@ Important things to note here:
 The difference between `s` and `[var_8h]` is 0x20 - 0x8 bytes, or 24 bytes.
 Therefore, writing 25 bytes is enough to alter the value of `[var_8h]`.
 
-To prevent the program from exitting, we can use `cat` to direct `stdin` to `stdout` and pipe that to the program along with our payload.
+To prevent the program from exiting, we can use `cat` to direct `stdin` to `stdout` and pipe that to the program along with our payload.
 This will allow us to type bash commands and read files such as `flag.txt` which contains our flag.
 
 ## Exploit Script
