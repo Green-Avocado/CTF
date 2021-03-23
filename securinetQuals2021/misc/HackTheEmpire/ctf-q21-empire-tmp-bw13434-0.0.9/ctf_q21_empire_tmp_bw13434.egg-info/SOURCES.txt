@@ -1,0 +1,9 @@
+README.md
+setup.cfg
+setup.py
+ctf_q21_empire_tmp_bw13434.egg-info/PKG-INFO
+ctf_q21_empire_tmp_bw13434.egg-info/SOURCES.txt
+ctf_q21_empire_tmp_bw13434.egg-info/dependency_links.txt
+ctf_q21_empire_tmp_bw13434.egg-info/requires.txt
+ctf_q21_empire_tmp_bw13434.egg-info/top_level.txt
+main/__init__.py
