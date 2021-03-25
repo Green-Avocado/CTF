@@ -415,6 +415,8 @@ io.send('/home/ctf/flag.txt')
 io.interactive()
 ```
 
+Thanks to [Kevin Zhang](https://github.com/Zhang-Kevin16) for the shellcode.
+
 ## Flag
 
 `flag{this_really_needs_a_kill_shot!_cc5dcc74acd62fa74899efaff22d8f79}`
