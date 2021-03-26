@@ -1,1 +1,1 @@
-picoCTF{this_is_a_test_flag}
+picoCTF{ea0e7e8e8c7bf85caa6601f3dae7ce26}
