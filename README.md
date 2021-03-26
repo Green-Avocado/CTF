@@ -1,4 +1,4 @@
-# CTF attempts and writeups
+# CTF
 
 This repository contains a collection of writeups for CTF challenges.
 
