@@ -1,4 +1,4 @@
-# PicoCTF 2020
+# PicoCTF 2021
 
 https://play.picoctf.org/compete
 
