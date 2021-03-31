@@ -2,6 +2,13 @@
 
 Disclaimer: Solved after the competition.
 
+I didn't manage to solve this during the event, however, I wanted to explore a format string vulnerability someone pointed out afterwards.
+While the inclusion of this vulnerability was unintentional, I was curious as to whether or not it could be solved with just `printf`.
+
+Turns out, it can.
+
+This challenge also let me test some ideas I had about `printf` exploits.
+
 ## Description
 
 Thou shalt not extremely waste memory!
@@ -10,15 +17,92 @@ N.B. In case you’re wondering libc is 2.27.
 
 ## Challenge
 
-Heap stuff
+We're given a program that allows the user to create, view, edit, and delete records through an interactive command prompt.
+
+```
+-> % ./bin
+Welcome!
+
+[S]tore record
+[R]eturn record
+[U]pdate content
+[M]odify title
+[D]elete record
+[P]rint all
+[Q]uit
+```
+
+ - Store record: creates a record with a given title and content.
+ - Return record: prints the content of a record.
+ - Update content: changes the content of a record.
+ - Modify title: changes the title of a record.
+ - Delete record: removes a record.
+ - Print all: prints the title and content of all currently saved records.
+ - Quit: exits the program.
+
+### Mitigations
+
+```
+    Arch:     amd64-64-little
+    RELRO:    Full RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      PIE enabled
+```
 
 ## Intended solution
 
-Go read [Daniele Pusceddu's writeup](https://danielepusceddu.github.io/ctf_writeups/volgaqualifiers21_pennywise/).
+The program handles user input differently depending on the length of the string.
+Only sufficiently long strings are stored on the heap, otherwise they are stored on the stack.
+The program determines whether to use the stack or heap later by saving metadata to the least significant byte.
 
-## Solution
+There is an off-by-one bug in the function that saves the title of a record.
+This can be used to overwrite the least significant byte of content when content is stored on the stack.
+This allows us to write anything we want to the stack and treat it as a pointer rather than a `char` array.
 
-Format string FTW...
+As we can define the value of this pointer, we can read and write to arbitrary locations.
+This allows us to overwrite `__free_hook` to call `system`, then free a record containing a shell command such as `/bin/sh`.
+
+See [Daniele Pusceddu's writeup](https://danielepusceddu.github.io/ctf_writeups/volgaqualifiers21_pennywise/) for a detailed explanation of this solution.
+
+## printf solution
+
+By storing a single page and updating its contents, we can send anything we want to `printf` as many times as we need.
+
+User input is never stored on the stack if it is a qword or longer, otherwise it is stored on the heap.
+So we can't write our own addresses to the stack.
+
+The stack contains a linked list of saved base pointers.
+These will point to known locations on the stack relative to the current callstack.
+In other words, we always know how far the subjects of these pointers are from $rsp$.
+We can therefore use these values to write an arbitrary value to a known location on the stack.
+
+```
+rbp: A
+
+...
+A: B
+...
+B: C
+...
+C: ???
+```
+
+A, B, and C are stored `rbp` values which point to each other.
+We can use B to write a word known location on the stack (C) using the `%hn` format specifier.
+
+We can now use A to overwrite the least significant byte of B so that it points at C+2.
+Now we can use the new value of B to write another word to C+2.
+
+By repeating this method, we can put any values we want on the stack, as long as the addresses we write to are not used in the execution loop.
+Note that it is ok if the program uses A or B in its loop, as A is not changed and it is possible to reset B after every write in the same `printf` call.
+
+Using this technique, we can write the address of `__free_hook` onto the stack 4 times, each offset by 2.
+This will allow us to overwrite freehook in 4 short writes using a single `printf` call, which is important for avoiding the use of `free` while `__free_hook` does not point to a valid function address.
+
+First, we store a page with the contents of our shell command (`//bin/sh\x00`).
+Next, we overwrite `__free_hook` to point at system.
+Now, when we delete the record containing our shell command, it will execute `system('//bin/sh')` and spawn a shell.
 
 ## Exploit
 
