@@ -91,7 +91,7 @@ Once we have a loop around `main` and `buy_stonks`, we can start storing address
 Now we can set up a group of short writes by storing the same address 4 times, offset by 2 bytes each time so the write occurs in a different part of the qword.
 Using this technique, overwriting an existing GOT entry becomes 4 writes, each 2 bytes long, rather than a single 8 byte long write.
 
-With the addresses set up, we can overwrite the GOT entry for `printf` so it points at the PLT for `system.
+With the addresses set up, we can overwrite the GOT entry for `printf` so it points at the PLT for `system`.
 This means that from this point on, when `printf` is called, its arguments are instead passed to `system`.
 Next time we are prompted to enter our api token, we can enter the shell command we want to execute.
 Here, typing `/bin/sh` will spawn a shell.
