@@ -4,6 +4,8 @@ This repository contains a collection of writeups for CTF challenges.
 
 ### 2021
 
+ - [bo1lers CTF](./bo1lersctf2021)
+ - [angstromCTF](./angstromctf2021)
  - [VolgaCTF Qualifiers](./volgaQuals2021)
  - [PicoCTF](./picoctf2021)
  - [SecurinetQuals2K21](./securinetQuals2021)
