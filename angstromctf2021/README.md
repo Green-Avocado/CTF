@@ -4,12 +4,12 @@
 
 ### pwn
 
- - [Secure Login](./securelogin)
- - [tranquil](./tranquil)
- - [Sanity Checks](./sanitychecks)
- - [RAIId Shadow Legends](./raiidshadowlegends)
+ - [Secure Login](./pwn/securelogin)
+ - [tranquil](./pwn/tranquil)
+ - [Sanity Checks](./pwn/sanitychecks)
+ - [RAIId Shadow Legends](./pwn/raiidshadowlegends)
 
 ### rev
 
- - [FREE FLAGS!!1!!](./freeflags)
+ - [FREE FLAGS!!1!!](./rev/freeflags)
 
