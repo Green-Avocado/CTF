@@ -89,7 +89,7 @@ The password for the given hash can be found online from the php official docume
 	}
 ```
 
-[!PHP verifyPassword() Docs](./resources/function.password-verify.png?raw=true)
+![PHP verifyPassword() Docs](./resources/function.password-verify.png?raw=true)
 
 Password: `rasmuslerdorf`
 
