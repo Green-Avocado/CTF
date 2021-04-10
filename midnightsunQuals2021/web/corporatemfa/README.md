@@ -72,10 +72,10 @@ The MFA token is a randomly generated integer for each login.
 The username is given in the source code:
 
 ```php
-	private function verifyUsername()
-	{
-		return $this->userData->username === 'D0loresH4ze';
-	}
+private function verifyUsername()
+{
+    return $this->userData->username === 'D0loresH4ze';
+}
 ```
 
 ### Password
@@ -83,10 +83,10 @@ The username is given in the source code:
 The password for the given hash can be found online from the php official documentation:
 
 ```php
-	private function verifyPassword()
-	{
-		return password_verify($this->userData->password, '$2y$07$BCryptRequires22Chrcte/VlQH0piJtjXl.0t1XkA8pw9dMXTpOq');
-	}
+private function verifyPassword()
+{
+    return password_verify($this->userData->password, '$2y$07$BCryptRequires22Chrcte/VlQH0piJtjXl.0t1XkA8pw9dMXTpOq');
+}
 ```
 
 ![PHP verifyPassword() Docs](./resources/function.password-verify.png?raw=true)
@@ -99,12 +99,12 @@ It is impractical to guess the value of the MFA token.
 However, there is an unsafe deserialization of user input on each login attempt:
 
 ```php
-	public function __construct($loginAttempt)
-	{
-		$this->userData = unserialize($loginAttempt);
-		if (!$this->userData)
-			throw new InvalidArgumentException('Unable to reconstruct user data');
-	}
+public function __construct($loginAttempt)
+{
+    $this->userData = unserialize($loginAttempt);
+    if (!$this->userData)
+        throw new InvalidArgumentException('Unable to reconstruct user data');
+}
 ```
 
 We can specify our own `unserialize` input as a GET parameter:
