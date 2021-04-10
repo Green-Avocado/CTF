@@ -1,0 +1,6 @@
+# hash leak
+https://www.php.net/manual/en/function.password-verify.php
+
+# php deserialize payloads
+https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Insecure%20Deserialization/PHP.md
+

