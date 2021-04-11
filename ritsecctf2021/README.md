@@ -4,6 +4,10 @@ https://ctf.ritsec.club/
 
 ## Writeups
 
+### pwn
+
+ - [Baby Graph](./pwn/babygraph)
+
 ### rev
 
  - [Fleshwound](./rev/fleshwound)
