@@ -1,5 +1,7 @@
 # angstromCTF 2021
 
+https://2021.angstromctf.com/
+
 ## Writeups
 
 ### pwn
