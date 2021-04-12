@@ -1,7 +1,7 @@
 # Finding Geno
 
 Disclaimer:
-This challenge was first solved by a team mate from Maple Bacon, then solve again independently by me as it includes information needed for the next parts of this challenge.
+This challenge was first solved by a teammate from Maple Bacon, then solve again independently by me as it includes information needed for the next parts of this challenge.
 I'm including this writeup as a set up for these next challenges.
 
 Please DO NOT attempt to reset the password for any accounts or social engineer the characters. We have taken action to prevent this in the future and your activity will likely be flagged as malicious by the account providers.
