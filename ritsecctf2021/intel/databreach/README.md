@@ -10,7 +10,7 @@ Oh no! Geno’s email was involved in a data breach! What was his password? Auth
 
 ## Solution
 
-From Geno's Linkedin page in the previous challenge, we can see that his email address is `incogeno@gmail.com`.
+From Geno's Linkedin page in the "Finding Geno", we can see that his email address is `incogeno@gmail.com`.
 
 Searching for this email in google gives us the following leak:
 
