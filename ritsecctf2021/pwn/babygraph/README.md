@@ -4,7 +4,7 @@ This is what happens to your baby when you want a pwner and a graph theorist. Do
 
 nc challenges1.ritsec.club 1339
 
-Author: @fpasswd on Discord, @flyingpassword on Twitte
+Author: @fpasswd on Discord, @flyingpassword on Twitter
 
 ## Challenge
 
