@@ -1,5 +1,11 @@
 # Flag-Gods
 
+The flag gods are trying to tell you something...
+
+nc chals20.cybercastors.com 14431
+
+## Challenge
+
 The prompt tells us that we need to calculate hamming distances to complete the challenge.
 For each trial, we're given a plain-text string and a hexadecimal string, and we need to calculate the hamming distance between the two within a very limited amount of time.
 After a certain number of trials, we are given the flag.

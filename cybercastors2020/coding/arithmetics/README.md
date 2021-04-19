@@ -1,5 +1,11 @@
 # Arithmetics
 
+2 plus two = ?
+
+nc chals20.cybercastors.com 14429
+
+## Challenge
+
 A user connected to a program through TCP, using netcat of the python ```socket``` module.
 The user would be prompted with a series of questions involving two operands ranging from 1-9, and an operation from the following list: addition, subtraction, multiplication, integer division.
 These could be given as digits and symbols (e.g. 1 + 2), or they could be replaced with words (e.g. one plus two).

@@ -1,5 +1,11 @@
 # Glitchity-Glitch
 
+If you wanna take your mind off things, you're more than welcome to visit our shop.
+
+nc chals20.cybercastors.com 14432
+
+## Challenge
+
 Connecting to the server at the specified port gives us a text base shop, where we have a balance, a list of items we can buy, and the ability to sell any items we buy for the original price.
 
 One of the items is a flag, however, the cost of this item (6000) is far greater than the amount of money we start with.
