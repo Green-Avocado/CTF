@@ -2,7 +2,7 @@
 
 ## Description
 
-What does asm1(0x1f3) return? Submit the flag as a hexadecimal value (starting with '0x'). NOTE: Your submission for this question will NOT be in the normal flag format. [Source](./test.S) located in the directory at /problems/asm1_2_4ced82d316c06cd3a46ba3bda9f6c144.
+What does asm1(0x1f3) return? Submit the flag as a hexadecimal value (starting with '0x'). NOTE: Your submission for this question will NOT be in the normal flag format. Source located in the directory at /problems/asm1_2_4ced82d316c06cd3a46ba3bda9f6c144.
 
 ## Solution
 
