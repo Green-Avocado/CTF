@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap');
+
+body  {
+  font-family: 'Press Start 2P', cursive;
+  text-align: center;
+  background: #1A237E;
+}
+
+#main {
+  color: #ff0a94;
+  width: 90%;
+  max-width: 1380px !important;
+  margin: 65px auto;
+  padding: 15px;
+  border: 0px solid;
+  border-radius: 5px;
+  background: #311B92;
+  display: grid;
+}
+
+h2 {
+  color: #00e676;
+}
+
+form {
+  margin: 30px 30px 30px 30px;
+}
+
+h5 {
+  color: #ec407a;
+}
+
+.btn-block {
+  width: 99%;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+img {
+  width: 920px;
+  margin-top: 1.4% !important;
+  height: 510px;
+  padding: 20px;
+  max-width: 100%;
+  display: block;
+  height: auto;
+  margin: auto;
+  object-fit: cover;
+  overflow: hidden;
+}
+
+img:hover {
+  animation: dance 1.8s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes dance {
+  0%   { transform: translate(1px, 1px) rotate(0deg);    }
+  10%  { transform: translate(-1px, -2px) rotate(-1deg); }
+  20%  { transform: translate(-3px, 0px) rotate(1deg);   }
+  30%  { transform: translate(3px, 2px) rotate(0deg);    }
+  40%  { transform: translate(1px, -1px) rotate(1deg);   }
+  50%  { transform: translate(-1px, 2px) rotate(-1deg);  }
+  60%  { transform: translate(-3px, 1px) rotate(0deg);   }
+  70%  { transform: translate(3px, 1px) rotate(-1deg);   }
+  80%  { transform: translate(-1px, -1px) rotate(1deg);  }
+  90%  { transform: translate(1px, 2px) rotate(0deg);    }
+  100% { transform: translate(1px, -2px) rotate(-1deg);  }
+}
+
+.spinner {
+  margin: 50px auto;
+  width: 40px;
+  height: 40px;
+  position: relative;
+}
+
+.cube1, .cube2 {
+  background-color: rgb(12, 151, 47);
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  
+  -webkit-animation: sk-cubemove 1.8s infinite ease-in-out;
+  animation: sk-cubemove 1.8s infinite ease-in-out;
+}
+
+.cube2 {
+  -webkit-animation-delay: -0.9s;
+  animation-delay: -0.9s;
+}
+
+@-webkit-keyframes sk-cubemove {
+  25% { -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5) }
+  50% { -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg) }
+  75% { -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5) }
+  100% { -webkit-transform: rotate(-360deg) }
+}
+
+@keyframes sk-cubemove {
+  25% { 
+    transform: translateX(42px) rotate(-90deg) scale(0.5);
+    -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5);
+  } 50% { 
+    transform: translateX(42px) translateY(42px) rotate(-179deg);
+    -webkit-transform: translateX(42px) translateY(42px) rotate(-179deg);
+  } 50.1% { 
+    transform: translateX(42px) translateY(42px) rotate(-180deg);
+    -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg);
+  } 75% { 
+    transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
+    -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
+  } 100% { 
+    transform: rotate(-360deg);
+    -webkit-transform: rotate(-360deg);
+  }
+}
