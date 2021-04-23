@@ -1,0 +1,25 @@
+{
+  "name": "the_galactic_times",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "makelaris,TRX",
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^3.14.0",
+    "fastify-formbody": "^5.0.0",
+    "fastify-helmet": "^5.3.1",
+    "fastify-static": "^4.0.1",
+    "point-of-view": "^4.14.0",
+    "pug": "^3.0.2",
+    "puppeteer": "^8.0.0",
+    "sqlite-async": "^1.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
+}
