@@ -6,6 +6,16 @@ We're given a binary that runs a command line calculator application and a libc 
 
 The calculator offers 4 operations: addition, subtraction, multiplication, and division.
 
+### Mitigations
+
+```
+    Arch:     amd64-64-little
+    RELRO:    Full RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x400000)
+```
+
 ## Solution
 
 In the `calculator` function, we can see that an output of 0xff3a will result in a special path.
