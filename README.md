@@ -4,6 +4,7 @@ This repository contains a collection of writeups for CTF challenges.
 
 ### 2021
 
+ - [Cyber Apocalypse](./cyberapocalypse2021)
  - [RITSEC CTF](./ritsecctf2021)
  - [Midnightsun CTF Qualifiers](./midnightsunQuals2021)
  - [bo1lers CTF](./bo1lersctf2021)
