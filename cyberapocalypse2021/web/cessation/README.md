@@ -2,6 +2,8 @@
 
 ## Challenge
 
+We need to reach the `/shutdown` route, however, it is mapped to an Access Denied page using `regex_map`.
+
 ```
 curl http://178.62.14.240:32090/
 ```
@@ -23,6 +25,11 @@ curl http://178.62.14.240:32090/shutdown
 ```
 
 ## Solution
+
+Regex expressions in `regex_map` do not match `/` characters as these are special in paths.
+
+Multiple consecutive `/` characters are ignored in urls.
+Therefore, we can access the `/shutdown` path by requesting the `//shutdown` path.
 
 ```
 curl http://178.62.14.240:32090//shutdown
