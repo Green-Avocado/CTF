@@ -9,6 +9,9 @@ async function router (fastify, options) {
 	});
 
 	fastify.get('/alien', async (request, reply) => {
+		if (request.ip != '127.0.0.1') {
+			return reply.code(401).send({ message: 'Only localhost is allowed'});
+		}
 		return reply.type('text/html').send(fs.readFileSync('views/alien.html',{encoding:'utf8', flag:'r'}));
 	});
 
@@ -32,6 +35,9 @@ async function router (fastify, options) {
 	});
 
 	fastify.get('/list', async (request, reply) => {
+		if (request.ip != '127.0.0.1') {
+			return reply.code(401).send({ message: 'Only localhost is allowed'});
+		}
 		return await db.getFeedback()
 			.then(feedback => {
 				if (feedback) {
