@@ -1,4 +1,4 @@
-# Pwn sanity check
+# Baby bof
 
 It's just another bof.
 nc dctf-chall-baby-bof.westeurope.azurecontainer.io 7481
