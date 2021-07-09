@@ -11,6 +11,6 @@ https://dctf.dragonsec.si/
  - [Readme](./pwn/readme)
  - [Baby bof](./pwn/babybof)
  - [Magic trick](./pwn/magictrick)
- - [Hotel ROP](./pwn/hotenrop)
+ - [Hotel ROP](./pwn/hotelrop)
  - [Formats last theorem](./pwn/formatslasttheorem)
 
