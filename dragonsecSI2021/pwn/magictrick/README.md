@@ -62,6 +62,7 @@ void sym.win(void)
     pcStack16 = sym.magic;
     sym.imp.exit(1);
 }
+```
 
 ## Solution
 
