@@ -1,5 +1,7 @@
 # cyBRICS 2021
 
+https://cybrics.net/dashboard
+
 ## Writeups
 
 ### pwn
