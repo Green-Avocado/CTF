@@ -4,6 +4,7 @@ This repository contains a collection of writeups for CTF challenges.
 
 ### 2021
 
+ - [RaRCTF](./rar2021)
  - [cyBRICS](./cybrics2021)
  - [redpwnCTF](./redpwn2021)
  - [DragonSec SI dCTF](./dragonsecSI2021)
