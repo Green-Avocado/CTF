@@ -6,7 +6,7 @@ https://ctf.rars.win/
 
 ### pwn
 
- - [Archer](./pwn/Archer)
+ - [Archer](./pwn/archer)
  - [ret2winRaRs](./pwn/ret2winrars)
  - [The Guessing Game](./pwn/the-guessing-game)
 
