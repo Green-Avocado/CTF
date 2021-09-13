@@ -1,4 +1,4 @@
-# flagbot
+# yeetcode
 
 ## Challenge
 
