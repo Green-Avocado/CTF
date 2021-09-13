@@ -2,7 +2,76 @@
 
 ## Challenge
 
+For each stage, we enter a password and are given a hexdump of the binary running on that stage.
+
+Each stage has a format string vulnerability such as the following:
+
+```c
+// stage 1
+void sym.runChallenge noreturn (void)
+
+{
+    int32_t unaff_EBX;
+    int32_t in_GS_OFFSET;
+    char *format;
+    int32_t var_ch;
+    
+    sym.__x86.get_pc_thunk.bx();
+    var_ch = *(int32_t *)(in_GS_OFFSET + 0x14);
+    sym.imp.puts(unaff_EBX + 0xf61);
+    sym.imp.printf(unaff_EBX + 0xf91);
+    sym.imp.puts(unaff_EBX + 0xffe);
+    sym.imp.printf(unaff_EBX + 0xfff);
+    sym.imp.fflush(**(undefined4 **)(unaff_EBX + 0x3f01));
+    sym.imp.fgets(&format, 0x96, **(undefined4 **)(unaff_EBX + 0x3efd));
+    sym.imp.puts(unaff_EBX + 0x1005);
+    sym.imp.printf(&format);
+    sym.imp.puts(unaff_EBX + 0x102c);
+    // WARNING: Subroutine does not return
+    sym.imp.exit(0);
+}
+```
+
+The levels differ in architecture and mitigations.
+
+If we read `message.txt` on each stage, we are given the port and password for the next stage.
+
+Once we finish stage 50, we can read `flag.txt`
+
 ## Solution
+
+### Level 1
+
+32-bit binary, no PIE, partial RELRO, contains `win()`
+
+Overwrite the GOT entry of `exit()` with the address of the `win()` function.
+
+### Level 2
+
+64-bit binary, no PIE, partial RELRO, contains `win()`
+
+Overwrite the GOT entry of `exit()` with the address of the `win()` function.
+
+### Level 3
+
+64-bit binary, no PIE, partial RELRO, contains `sym.imp.system`
+
+Overwrite the GOT entry of `exit()` with the address of the `main()` function.
+The program will jump to the start of `main()` instead of exiting.
+
+Overwrite the GOT entry of `printf()` with the address of the PLT entry for `system()`.
+
+The program will restart again, now send it `/bin/sh` and it will execute `system("/bin/sh")`.
+
+### Level 4
+
+64-bit binary, PIE enabled, no RELRO, 3 `printf(&format)` calls
+
+Leak the address of libc and the executable using `%p`.
+
+Overwrite the GOT entry of `printf()` with the address of `system()` in libc.
+
+Send `/bin/sh` to spawn a shell.
 
 ## Exploit
 
