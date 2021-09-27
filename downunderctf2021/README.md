@@ -4,3 +4,7 @@ https://play.duc.tf/
 
 # pwn
 
+ - [babygame](./pwn/babygame)
+ - [oversight](./pwn/oversight)
+ - [write-what-where](./pwn/writewhatwhere)
+
