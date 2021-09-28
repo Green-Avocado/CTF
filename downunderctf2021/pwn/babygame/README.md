@@ -1,5 +1,37 @@
 # babygame
 
+## Challenge
+
+The binary firsts asks for our name, then we are allowed to print and change our name as many times as we want.
+
+### Mitigations
+
+```
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      PIE enabled
+```
+
+## Solution
+
+The program has a secret option that allows us to spawn a shell if we correctly guess 4 bytes from /dev/urandom.
+
+If we make our name 0x20 bytes long, the entire buffer will be filled and the stored string will not be null terminated.
+
+The function for changing our name uses `strlen` to determine how many characters to read.
+
+Since `obj.RANDBUF` is adjacent, we will gain an additional 0x6 bytes from the address of the `"/dev/urandom\x00"` string.
+
+By printing our name, we can leak the base address of the executable.
+
+When writing our name, we can overwrite this string address to point to another string with a valid file, such as `"/bin/sh\x00"`
+
+We know the first 4 bytes of /bin/sh, so we can send our guess as `\x7fELF` formatted as a number in little endian.
+
+This will spawn a shell and allow us to read the flag file.
+
 ## Exploit
 
 ```py
