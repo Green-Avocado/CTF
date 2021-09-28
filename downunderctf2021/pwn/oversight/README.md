@@ -1,5 +1,35 @@
 # oversight
 
+## Challenge
+
+A stack leak and an echo program with a limited input length.
+
+### Mitigations
+
+```
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      PIE enabled
+```
+
+## Solution
+
+Using the leak at the start of the program, we can leak a single value from the stack.
+We can use this to leak `libc_start_main_return` and find the base address of libc.
+
+The executable always ensures that the string is null terminated by appending a null byte.
+
+The size of the buffer is 0x100 bytes, and we are allowed to send 0x100 bytes, so if we send the max amount of characters, the null byte will be appended outside of the buffer.
+This will overwrite the least significant byte of the base address.
+
+The program returns multiple times after reading this, so on the second return, RIP will be popped from the overwritten RBP+8.
+
+The exact location of this new RIP on the stack will depend on environment variables, but we can increase the likelyhood of landing on our ROP chain by filling the buffer with `ret` gadgets, with our main payload at the end.
+
+If the RIP is popped from anywhere in the buffer, it will return until it reaches our ROP chain which spawns a shell.
+
 ## Exploit
 
 ```py
