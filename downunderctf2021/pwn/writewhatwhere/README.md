@@ -1,5 +1,33 @@
 # write-what-where
 
+## Challenge
+
+We have an arbitrary 4 byte write anywhere and no leaks.
+
+### Mitigations
+
+```
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x400000)
+```
+
+## Solution
+
+Because PIE is disabled, and the program is not full RELRO, we can overwrite the GOT entry for `exit` with the address of `main`, which will restart the program instead of exiting.
+
+Now the `atoi` GOT entry will be resolved to a libc address, as it has been called in this first loop.
+
+On the second loop, we can overwrite the least significant 2 bytes of the `atoi` GOT entry.
+This will also overwrite the most significant bytes of an adjacent entry, but we know that these bytes will be zeros, so we can send zeros for these to prevent a segfault.
+
+The `system` function is close to the `atoi` function in libc and the addresses differ by less than 2 bytes.
+If we overwrite `atoi` will `system`, the program will call `system` with our input in the next loop.
+
+On the third loop, we send `/bin/sh\x00` when the program asks where we want to write to.
+This will spawn a shell and allow us to read the flag file.
+
 ## Exploit
 
 ```py
