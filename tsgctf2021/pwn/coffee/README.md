@@ -3,10 +3,14 @@
 Disclaimer:
 I was not able to solve this challenge during the CTF.
 The challenge had me frustrated for most of the event due to the restrictions on the format string bug.
-I solved it with the help of [this writeup](https://hackmd.io/@moratorium08/ryMcaePVY).
+I solved it with the help of [moratorium08's writeup](https://hackmd.io/@moratorium08/ryMcaePVY).
 I am documenting the solution here because I think it may be a useful resource in the future.
 
 ## Challenge
+
+A very simple program with a format string vulnerability.
+
+The program makes it much harder to call `printf` more than once as it checks the value of a global variable, which is set to 0 after the first call.
 
 ### Mitigations
 
@@ -36,6 +40,20 @@ int main(void) {
 ```
 
 ## Solution
+
+The restrictions on the `printf` call mean we must set up and execute our ropchain using only the one call.
+
+Since our payload is written to the top of the stack, we can write our ropchain immediately after the format specifiers of our format string payload.
+To execute the ropchain, we have to pop all the values of the format string payload to reach the ropchain.
+This can be done by overwriting the `puts` GOT entry with the address of the `pop5` gadget.
+
+Once this is overwritten, the first 4 qwords on the stack will be popped and our ropchain starting on `rsp+0x20` will be executed.
+From here, we can exploit the program as if we had a regular stack-based buffer overflow vulnerability, by leaking the libc address and calling `system("/bin/sh\x00")`.
+
+However, I found the solution in [moratorium08's writeup](https://hackmd.io/@moratorium08/ryMcaePVY) quite interesting, and used it when writing my own exploit.
+
+The solution does not require another loop through `main` as it uses `scanf` in the ropchain to overwrite the `puts` GOT entry again, after leaking libc.
+On this second overwrite, `puts` is replaced with `system`, and the PLT is called after setting registers in order to spawn a shell.
 
 ## Exploit
 
