@@ -1,5 +1,11 @@
 # coffee
 
+Disclaimer:
+I was not able to solve this challenge during the CTF.
+The challenge had me frustrated for most of the event due to the restrictions on the format string bug.
+I solved it with the help of [this writeup](https://hackmd.io/@moratorium08/ryMcaePVY).
+I am documenting the solution here because I think it may be a useful resource in the future.
+
 ## Challenge
 
 ### Mitigations
