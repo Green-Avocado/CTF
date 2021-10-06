@@ -61,7 +61,7 @@ Output:
 32512
 ```
 
-Googling this error code as "python system 32512" tells us that this is an error code which is often seen when the program cannot find the binary to execute.
+Googling this error code as "python os.system 32512" tells us that this is an error code which is often seen when the program cannot find the binary to execute.
 
 We now know that netcat is likely not available, but also that the output is the return value of our code.
 
