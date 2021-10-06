@@ -4,6 +4,37 @@
 
 ## Solution
 
+```
+Input:
+hello world
+
+Output:
+Incorrect padding
+```
+
+```
+Input:
+AAAA
+
+Output:
+invalid load key, '\x00'.
+```
+
+```
+Input:
+Y3N1YnByb2Nlc3MKY2hlY2tfb3V0cHV0CnAxCihTJ2xzJwpwMgp0cDMKUnA0Ci4=
+
+Output:
+b'app\nflag\ngunicorn_config.py\nrequirements.txt\n
+```
+
+Input:
+Y3N1YnByb2Nlc3MKY2hlY2tfb3V0cHV0CnAxCigobHAyClMnY2F0JwpwMwphUydmbGFnJwpwNAphdFJwNQou
+
+Output:
+b'SNYK{6854ecb17f51afdf2610f741dd07bd6099c616e4ab1a403eb14fa8639e1fb0af}\n'
+```
+
 ## Exploit
 
 ```py
