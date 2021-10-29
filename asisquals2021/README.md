@@ -6,6 +6,6 @@ https://asisctf.com/
 
 ### pwn
 
- - [ABBR](./abbr)
- - [justpwnit](./justpwnit)
+ - [ABBR](./pwn/abbr)
+ - [justpwnit](./pwn/justpwnit)
 
