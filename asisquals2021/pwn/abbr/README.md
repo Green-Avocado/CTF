@@ -17,7 +17,7 @@ For example, "ret2" is converted to "return to ", so an input like "ret2libc" wi
 
 ### main source code
 
-```
+```c
 int main() {
   setvbuf(stdin, NULL, _IONBF, 0);
   setvbuf(stdout, NULL, _IONBF, 0);
@@ -43,7 +43,7 @@ int main() {
 
 ### Translator struct
 
-```
+```c
 typedef struct Translator {
   void (*translate)(char*);
   char *text;
@@ -53,7 +53,7 @@ typedef struct Translator {
 
 ### english\_expand source code
 
-```
+```c
 void english_expand(char *text) {
   int i, alen, blen;
   Rule *r;
