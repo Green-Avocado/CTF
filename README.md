@@ -4,6 +4,7 @@ This repository contains a collection of writeups for CTF challenges.
 
 ### 2021
 
+ - [Hack.lu CTF](./hackluctf2021)
  - [ASIS CTF Qualifiers](./asisquals2021)
  - [SNYKCON](./snykcon2021)
  - [TSG CTF](./tsgctf2021)
