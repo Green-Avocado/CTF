@@ -1,14 +1,14 @@
-Hack.lu CTF 2021
+# Hack.lu CTF 2021
 
 https://flu.xxx/
 
-# Writeups
+## Writeups
 
-## pwn
+### pwn
 
 - [secure-prototype](./pwn/secureprototype)
 
-## misc
+### misc
 
  - [Tenbagger](./misc/tenbagger)
 
