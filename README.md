@@ -4,13 +4,14 @@ This repository contains a collection of writeups for CTF challenges.
 
 ### 2021
 
+ - [csaw CTF Finals](./csawfinals2021)
  - [K3RN3L CTF](./k3rn3lctf2021)
  - [Hack.lu CTF](./hackluctf2021)
  - [ASIS CTF Qualifiers](./asisquals2021)
  - [SNYKCON](./snykcon2021)
  - [TSG CTF](./tsgctf2021)
  - [DownUnderCTF](./downunderctf2021)
- - [csaw CTF](./csaw2021)
+ - [csaw CTF Qualifiers](./csawquals2021)
  - [corCTF](./corctf2021)
  - [RaRCTF](./rar2021)
  - [cyBRICS](./cybrics2021)

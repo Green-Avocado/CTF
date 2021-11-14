@@ -1,4 +1,4 @@
-# CSAW 2021
+# CSAW Qualifiers 2021
 
 https://ctf.csaw.io/
 
