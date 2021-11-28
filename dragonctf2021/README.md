@@ -6,4 +6,4 @@ https://ctf.dragonsector.pl/
 
 ### misc
 
-- [Compress The Flag](./pwn/compress-the-flag)
+- [Compress The Flag](./misc/compress-the-flag)
