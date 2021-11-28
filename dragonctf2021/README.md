@@ -4,6 +4,6 @@ https://ctf.dragonsector.pl/
 
 ## Writeups
 
-### pwn
+### misc
 
 - [Compress The Flag](./pwn/compress-the-flag)
