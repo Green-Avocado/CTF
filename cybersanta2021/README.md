@@ -16,6 +16,7 @@ https://ctf.hackthebox.com/ctf/288
 
 - [Toy Workshop](./web/toy-workshop)
 - [Toy Management](./web/toy-management)
+- [Gadget Santa](./web/gadget-santa)
 
 ### rev
 
