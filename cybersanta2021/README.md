@@ -12,13 +12,14 @@ https://ctf.hackthebox.com/ctf/288
 - [Minimelfistic](./pwn/minimelfistic)
 - [Music Notes](./pwn/music-notes)
 
-### rev
-
-- [Infiltration](./rev/infiltration)
-
 ### web
 
 - [Toy Workshop](./web/toy-workshop)
+- [Toy Management](./web/toy-management)
+
+### rev
+
+- [Infiltration](./rev/infiltration)
 
 ### crypto
 
