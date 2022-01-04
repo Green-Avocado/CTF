@@ -10,7 +10,7 @@ The flag for this challenge does not include the standard picoCTF{} wrapper.
 
 ## Challenge
 
-We're given a simple binary, [gauntlet](./gauntlet).
+We're given a simple binary.
 
 ### Mitigations
 
