@@ -4,6 +4,7 @@ This repository contains a collection of writeups for CTF challenges.
 
 ### 2021
 
+ - [Cyber\*Sci Regionals](./cybersciregional2022)
  - [Cyber Santa is Coming to Town](./cybersanta2021)
  - [Dragon CTF](./dragonctf2021)
  - [csaw CTF Finals](./csawfinals2021)
