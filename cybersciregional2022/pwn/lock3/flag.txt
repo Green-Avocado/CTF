@@ -1,0 +1,1 @@
+There are currently 178934 crates in the warehouse.
