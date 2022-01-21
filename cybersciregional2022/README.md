@@ -1,4 +1,4 @@
-# Cyber\*Sci Regionals 2022
+# CyberSci Regionals 2022
 
 https://cybersecuritychallenge.ca/
 
