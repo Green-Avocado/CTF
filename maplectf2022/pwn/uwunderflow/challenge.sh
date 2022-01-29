@@ -1,0 +1,2 @@
+cd /ctf
+./uwunderflow

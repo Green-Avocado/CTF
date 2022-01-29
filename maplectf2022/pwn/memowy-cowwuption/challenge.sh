@@ -1,0 +1,2 @@
+cd /ctf
+./memowy-cowwuption

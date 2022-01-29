@@ -1,0 +1,2 @@
+cd /ctf
+./baby-pwintf
