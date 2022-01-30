@@ -4,6 +4,7 @@ This repository contains a collection of writeups for CTF challenges.
 
 ### 2022
 
+- [Insomni'hack](./insomnihack2022)
 - [UBC Maple CTF](./ubcmaplectf2022)
 - [Real World CTF](./realworldctf2022)
 - [CyberSci Regionals](./cybersciregional2022)
