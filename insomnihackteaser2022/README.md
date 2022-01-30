@@ -1,4 +1,4 @@
-# Insomni'hack 2022
+# Insomni'hack teaser 2022
 
 https://teaser.insomnihack.ch/
 
