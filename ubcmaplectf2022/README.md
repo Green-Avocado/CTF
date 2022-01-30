@@ -1,4 +1,4 @@
-# Maple CTF 2022
+# UBC Maple CTF 2022
 
 https://ctf.maplebacon.org/
 
