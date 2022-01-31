@@ -20,5 +20,4 @@ https://ctf.maplebacon.org/
 ### misc
 
  - [Encode Me](./misc/Encode-Me)
- - [xxEncode Me](./misc/Encode-Me)
-
+ - [Decode Me](./misc/Encode-Me)
