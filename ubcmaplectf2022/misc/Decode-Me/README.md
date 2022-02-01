@@ -60,7 +60,8 @@ The hope for this challenge was that:
 
 - Players would be able to decode raw bytes and other forms of encoded data,
 which would be useful especially in binary exploit challenges.
-- Players would discover libraries such as [pwntools](https://github.com/Gallopsled/pwntools), which would be very useful in binary exploit challenges.
+- Players would discover libraries such as [pwntools](https://github.com/Gallopsled/pwntools),
+which would be very useful in binary exploit challenges.
 
 The solution described in this writeup uses pwntools.
 
