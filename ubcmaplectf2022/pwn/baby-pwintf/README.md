@@ -27,6 +27,10 @@ as the rating generated is in the range [0, 11]:
 *rating = input[0] % 11;
 ```
 
+## Solution
+
+This challenge contains the same format string vulnerability as "echowo".
+
 If we could change the value stored at `rating` to 0x1337, the program would print the flag.
 
 Let's look at a less common format specifier for `printf`:
@@ -91,10 +95,6 @@ Thus, our final payload looks like this: `%4919c%7$n`.
 This will print 4919 characters, then write that same number into the address pointed at by the
 7th argument.
 This value is equal to 0x1337, which will cause the program to print the flag.
-
-## Solution
-
-This challenge contains the same format string vulnerability as "echowo".
 
 ## Exploit
 
