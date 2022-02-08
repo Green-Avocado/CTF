@@ -28,7 +28,7 @@ for most binary exploitation challenges in CTFs.
  - [wetuwn-addwess](./pwn/wetuwn-addwess)
  - [wetuwn-owiented-pwogwamming](./pwn/wetuwn-owiented-pwogwamming)
  - [uwu-intewpwetew](./pwn/uwu-intewpwetew)
- - [wetuwn-addwess](./pwn/wetuwn-addwess)
+ - [wetuwn-to-wibc](./pwn/wetuwn-to-wibc)
  - [pwintf](./pwn/pwintf)
 
 ### misc
