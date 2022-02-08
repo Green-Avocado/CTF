@@ -193,7 +193,15 @@ overwrites = flat([
 We use this to create 2 format strings:
 
 - One writes 2 bytes to a given address, useful for partially overwriting GOT entries.
-- The other reads 16 bytes to a given address, useful for everything else, including building ropchains and writing more format strings.
+- The other reads 16 bytes to a given address, useful for everything else, including building
+  ropchains and writing more format strings.
+
+NOTE: ret2dlresolve would be ideal here, as we have no ASLR leaks or libc version, but PIE is
+off and the binary is only using partial RELRO.
+Unfortunately, the `.text` section is likely too far from writiable data for this attack to work.
+This is because the linker attempts to write to the GOT when resolving symbols.
+If we try a ret2dlresolve here, the linker attempts to write to an unwritable region of memory and
+the program segfaults.
 
 ### Leaking the libc version
 
