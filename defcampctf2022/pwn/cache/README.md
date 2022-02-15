@@ -63,7 +63,7 @@ if (var_1ch == 6) {
 
 Delete user:
 
-```
+```c
 if (var_1ch == 7) {
     sym.imp.free(buf);
 }
