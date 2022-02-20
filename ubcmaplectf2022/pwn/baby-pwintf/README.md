@@ -21,7 +21,7 @@ if (*rating == 0x1337) {
 ```
 
 However, this is not possible during normal execution,
-as the rating generated is in the range [0, 11]:
+as the rating generated is in the range [0, 10]:
 
 ```c
 *rating = input[0] % 11;
