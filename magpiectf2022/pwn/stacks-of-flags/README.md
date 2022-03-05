@@ -53,6 +53,15 @@ int main()
 
 ## Solution
 
+The call to `gets` is unsafe and introduces a buffer overflow vulnerability.
+It is reading into a buffer of 64 bytes, but we can write more characters than this limit, which will overwrite other local variables.
+
+The `file_name` variable stores the name of the file to read from.
+It is also on the stack, below the `desired_flag` buffer.
+If we read 64 characters to pad the `desired_flag` buffer, the remainder of our input will go into `file_name`.
+
+To read from `flag.txt`, we send 64 arbitrary characters, followed by `flag.txt`.
+
 ## Exploit
 
 ```py
