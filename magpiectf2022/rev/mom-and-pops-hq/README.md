@@ -367,7 +367,7 @@ import claripy
 
 p = angr.Project('./CONFIDENTIAL_BLUEPRINTS', main_opts={'base_addr': 0}, auto_load_libs=True)
 
-password_chars = [claripy.BVS("byte_%d", 8) for i in range(8)]
+password_chars = [claripy.BVS("byte_%d" % i, 8) for i in range(8)]
 password = claripy.Concat(*password_chars + [claripy.BVV(b'\n')])
 
 s = p.factory.entry_state(
