@@ -2,7 +2,7 @@
 
 ## Challenge
 
-The program is a wrapper for the `ls` utility.
+The program is a simple version of the `ls` utility.
 
 We are allowed to pass 0 or 1 options to the program under normal conditions.
 These options are restricted to `-a` and `-l`.
