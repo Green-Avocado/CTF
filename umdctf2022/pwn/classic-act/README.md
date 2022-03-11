@@ -2,6 +2,54 @@
 
 ## Challenge
 
+The challenge first asks for our name, which it repeats to us.
+It then asks for a second input, then prints one of two responses based on the input.
+
+```
+Please enter your name!
+AAA
+Hello:
+AAA
+What would you like to do today?
+BBB
+Good luck doing that!
+```
+
+### Decompiled code
+
+```c
+uint64_t sym.vuln(void) {
+    int32_t iVar1;
+    uint64_t uVar2;
+    int64_t in_FS_OFFSET;
+    int64_t var_68h;
+    char *format;
+    char *s1;
+    int64_t var_8h;
+    
+    var_8h = *(int64_t *)(in_FS_OFFSET + 0x28);
+    sym.imp.puts("Please enter your name!");
+    sym.imp.gets(&format);
+    sym.imp.puts("Hello:");
+    sym.imp.printf(&format);
+    sym.imp.putchar(10);
+    sym.imp.puts("What would you like to do today?");
+    sym.imp.gets(&s1);
+    iVar1 = sym.imp.strncmp(&s1, "Play in UMDCTF!", 0xf);
+    if (iVar1 != 0) {
+        sym.imp.puts("Good luck doing that!");
+    }
+    else {
+        sym.imp.puts("You have come to the right place!");
+    }
+    uVar2 = (uint64_t)(iVar1 != 0);
+    if (var_8h != *(int64_t *)(in_FS_OFFSET + 0x28)) {
+        uVar2 = sym.imp.__stack_chk_fail();
+    }
+    return uVar2;
+}
+```
+
 ### Mitigations
 
 ```
@@ -13,6 +61,34 @@
 ```
 
 ## Solution
+
+There is a format string vulnerability in the code used to echo the user's name.
+The challenge uses `printf` directly on user input to repeat the name.
+This allows us to leak values from the stack, such as the canary, using conversion specifiers.
+
+```
+Please enter your name!
+%19$p
+Hello:
+0x5c7d54174b43c600
+What would you like to do today?
+```
+
+There is a buffer overflow vulnerability in the next input, as the challenge uses `gets` which does
+not check the length of our input.
+We can use this to perform a ret2libc attack.
+
+First, we can leak the libc version by calling `puts` with different GOT entries as the argument.
+This allows us to leak the addresses of libc versions.
+The last 12 bits of each address can be used to determine the libc version in a libc database.
+
+Note that this challenge uses a less common version of libc and may not be present in some
+databases.
+
+Now we can leak the base address of libc using the a known function address and a GOT entry.
+Afterwards, we return to `main` so we can send a second payload to spawn a shell.
+The second input simply calls `system("/bin/sh")` using the leaked addresses.
+This will spawn a shell and allow us to read the flag.
 
 ## Exploit
 
