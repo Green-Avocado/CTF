@@ -4,6 +4,7 @@ This repository contains a collection of writeups for CTF challenges.
 
 ### 2022
 
+- [UTCTF](./utctf2022)
 - [Pragyan CTF](./pragyanctf2022)
 - [UMD CTF](./umdctf2022)
 - [magpieCTF](./magpiectf2022)
