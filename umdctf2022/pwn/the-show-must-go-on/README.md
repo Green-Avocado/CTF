@@ -2,6 +2,55 @@
 
 ## Challenge
 
+We are given a statically linked binary with an interactive prompt followed by a menu.
+
+The prompt:
+
+```
+Welcome to the comedy club!
+We only have the best comedians here!Please help us set up for your act
+What is the name of your act?
+test_act_name
+Your act code is: Main_Act_Is_The_Best
+How long do you want the show description to be?
+10
+Describe the show for us:
+a test act
+```
+
+The menu:
+
+```
+What would you like to do?
++-------------+
+|   Actions   |
+|-------------|
+| Perform Act |
+| Switch Act  |
+| End Show    |
++-------------|
+```
+
+Or
+
+```
+What would you like to do?
++-------------+
+|   Actions   |
+|-------------|
+| Perform Act |
+| Switch Act  |
+| End Show    |
++-------------|
+Action: 2
+Name of Act: new act
+Act Code: [1]    774 segmentation fault (core dumped)  ./theshow
+```
+
+- Option 1 makes the menu print a line from a hardcoded set of strings, then exits.
+- Option 2 tends to segfault.
+- Option 3 exits immediately.
+
 ### Mitigations
 
 ```
