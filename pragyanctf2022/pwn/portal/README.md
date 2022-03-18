@@ -2,7 +2,115 @@
 
 ## Challenge
 
+We're given binary and a server to connect to.
+Connecting to the server or running the binary will show the following prompt:
+
+```
+Welcome!
+
+What would you like to do?
+1) Check Balance
+2) Upgrade Pack
+```
+
+Options 1 and 2 call the functions `see_balance` and `init_pack`, respectively:
+
+```c
+void sym.see_balance(void) {
+    int64_t in_FS_OFFSET;
+    char *format;
+    int64_t var_8h;
+    
+    var_8h = *(int64_t *)(in_FS_OFFSET + 0x28);
+    sym.imp.printf("You currently have Rs.%d left!\n", _obj.b);
+    sym.imp.puts("Wanna upgrade pack?");
+    sym.imp.fgets(&format, 100, _reloc.stdin);
+    sym.imp.printf(&format);
+    if (var_8h != *(int64_t *)(in_FS_OFFSET + 0x28)) {
+        sym.imp.__stack_chk_fail();
+    }
+    return;
+}
+
+void sym.init_pack(void) {
+    if (_obj.b == 0xf9) {
+        sym.upgrade_pack();
+    }
+    else {
+        sym.imp.puts("You do not have enough balance :(");
+    }
+    return;
+}
+```
+
+### Checksec
+
+```
+    Arch:     amd64-64-little
+    RELRO:    Full RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      PIE enabled
+```
+
 ## Solution
+
+Notice that there is a format string vulnerability in the `see_balance` function.
+We can use this to leak arbitrary values from the stack.
+
+### My solution
+
+Leaking a libc address and a stack addres will allow us to write a rop chain using multiple `printf` calls.
+
+We can now repeatedly call `printf` using the `%n` conversion specifier to write a ropchain, 2 bytes at a time.
+
+Finally, we enter `0` for our option, which is invalid and will cause the program to return.
+Instead of returning into `libc_start_main`, the program will enter the rop chain and spawn a shell.
+
+### Intended solution
+
+Instead of leaking a libc address, we leak a `main` address to calculate the address of `_obj.b`.
+
+Using the same vulnerability, we overwrite `_obj.b` with 0xf9 to reach the `upgrade_pack` function using option 2.
+
+Here's what the function looks like decompiled:
+
+```c
+undefined8 sym.upgrade_pack(void) {
+    int64_t iVar1;
+    undefined8 uVar2;
+    int64_t in_FS_OFFSET;
+    undefined8 stream;
+    char *format;
+    char *s;
+    int64_t var_8h;
+    
+    var_8h = *(int64_t *)(in_FS_OFFSET + 0x28);
+    iVar1 = sym.imp.fopen("flag_maybe", 0x20bc);
+    if (iVar1 == 0) {
+        sym.imp.puts("Flag not found.");
+        sym.imp.exit(1);
+    }
+    sym.imp.fgets(&s, 0x80, iVar1);
+    sym.imp.fclose(iVar1);
+    sym.imp.puts("Upgrading PAcK");
+    uVar2 = sym.imp.malloc(0x12d);
+    sym.imp.puts("Enter coupon code:");
+    sym.imp.fgets(uVar2, 300, _reloc.stdin);
+    sym.imp.puts("Upgrading pack with the coupon:");
+    sym.imp.printf(uVar2);
+    _obj.check = 1;
+    sym.see_profile();
+    uVar2 = 0;
+    if (var_8h != *(int64_t *)(in_FS_OFFSET + 0x28)) {
+        uVar2 = sym.imp.__stack_chk_fail();
+    }
+    return uVar2;
+}
+```
+
+It reads the flag into memory, then there's another format string vulnerability.
+We can use this to leak the stack and read the flag.
 
 ## Exploit
 
