@@ -2,6 +2,8 @@
 
 ## Challenge
 
+We're given a 32-bit binary with no PIE or canary.
+
 ### Checksec
 
 ```
@@ -14,6 +16,31 @@
 ```
 
 ## Solution
+
+The binary contains a buffer overflow vulnerability in the `new_main` function:
+
+```c
+void sym.new_main(void) {
+    int32_t unaff_EBX;
+    void *s;
+    int32_t var_4h;
+    
+    sym.__x86.get_pc_thunk.bx();
+    sym.imp.memset(&s, 0, 0x20);
+    sym.imp.puts(unaff_EBX + 0xd53);
+    sym.imp.read(0, &s, 0x200);
+    sym.imp.puts(unaff_EBX + 0xd64);
+    return;
+}
+```
+
+The buffer `s` is 0x2c bytes large, but we are allowed to read up to 0x200 bytes into it.
+With the lack of a canary or PIE, it is trivial to overwrite the return address with a rop chain.
+
+We can use this to leak the libc address by calling `puts` on a GOT address.
+
+Once we have the libc address, we can return back into `new_main`, where we can reuse the vulnerability to create a new rop chain.
+This second rop chain will call `system("/bin/sh")` using libc functions, which will spawn a shell and allow us to read the flag.
 
 ## Exploit
 
