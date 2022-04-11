@@ -1,3 +1,36 @@
+# Speed 5
+
+## Challenge
+
+We are given a small binary with no PIE, no canary, and partial RELRO.
+
+The binary contains little more than a single call to `read`.
+
+### Checksec
+
+```
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x8048000)
+```
+
+## Solution
+
+The call to `read` is vulnerable to a buffer overflow, as it reads more characters than the buffer can safely store.
+The overflow is quite short, so we first need to create room for a larger ropchain.
+
+The program first enters the `go` function from `main`.
+The `go` function is the one that contains the call to `read`.
+The use of an additional function here allows us to pivot our stack onto the data section of the binary.
+
+By pivoting the stack, we now know our stack address, which allows us to extend our ropchain using a second call to `read`.
+From here, we can use a ret2dlresolve attack to call `system("/bin/sh")` and spawn a shell.
+
+## Exploit
+
+```py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # This exploit template was generated via:
@@ -85,3 +118,10 @@ io.send(flat({
     }))
 
 io.interactive()
+```
+
+## Flag
+
+```
+midnight{1d5be118261b067c0af4cff137d48d60}
+```
