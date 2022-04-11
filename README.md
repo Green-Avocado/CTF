@@ -4,6 +4,8 @@ This repository contains a collection of writeups for CTF challenges.
 
 ### 2022
 
+- [SecurinetQuals](./securinetquals2022)
+- [Midnightsun CTF Qualifiers](./midnightsunquals2022)
 - [UTCTF](./utctf2022)
 - [Pragyan CTF](./pragyanctf2022)
 - [UMD CTF](./umdctf2022)
@@ -40,7 +42,7 @@ This repository contains a collection of writeups for CTF challenges.
 - [angstromCTF](./angstromctf2021)
 - [VolgaCTF Qualifiers](./volgaquals2021)
 - [PicoCTF](./picoctf2021)
-- [SecurinetQuals2K21](./securinetquals2021)
+- [SecurinetQuals](./securinetquals2021)
 - [UTCTF](./utctf2021)
 
 ### 2020
