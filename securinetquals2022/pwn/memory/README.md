@@ -180,6 +180,8 @@ Once the ropchain is written, we can use a single 4 byte write to change the ret
 This gadget is chosen as it will pop 2 values off the stack, then enter our ropchain.
 This only requires 4 bytes as we will chose a gadget from the exe to overwrite a return address that originally points at main, meaning we only need to overwrite the lower bytes.
 
+In hindsight, this could have been replaced by a shorter ropchain which used a read call to write a longer secondary ropchain more conventionally.
+
 #### Ropchain contents
 
 Since we have `mprotect`, and we have access to libc gadgets including `syscall` gadgets, we can create a RWX page to place and execute shellcode.
