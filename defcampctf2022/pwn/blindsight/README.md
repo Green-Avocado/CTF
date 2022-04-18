@@ -52,15 +52,28 @@ At this stage, we have to make some reasonable assumptions:
     Without leaks, we can only defeat a stack canary by bruteforcing it one byte at a time.
     If the stack canary is randomized for each run, we would not be able to bruteforce it.
 
-- **PIE or ASLR is disabled.**
-    Without leaks, we cannot know the address of the binary in memory unless either PIE or ASLR is
-    disabled.
-    We need the address of an executable page to start searching for ROP gadgets.
-
-These three assumptions are required for this particular exploit.
+These two assumptions are required for this particular exploit.
 This is not too uncommon of a situation though, many other challenges also share these traits.
 
 With those assumptions, we can infer that the saved RIP is 88 characters from the buffer.
+
+**Update**:
+I previously said that the technique requires PIE disabled or ALSR disabled.
+This is not necessarily true.
+The address of the binary may still be consistent between runs if fork is used to serve
+connections, similar to how the canary may be constant.
+The address will still be random however, but this can still be exploited by using a partial
+overwrite of the least significant 16 bits, rather than a full overwrite of the address.
+Using a partial overwrite, the necessary gadgets can be found by bruteforcing only these 16 bits.
+
+BROP is also possible with a binary address that is randomized between runs.
+The lower 12 bits will have to be checked systematically, as with a regular BROP.
+The next 4 bits will be random and change every run, so these can be set to a constant value.
+On average, the 4 bits will be correct in 8 guesses.
+Due to the randomness in this technique, each guess for the lower 12 bits has to be tried a number
+of times before one can be confident that it does not contain the desired gadget.
+
+Thanks to yrp for bringing this up.
 
 ### Find STOP gadget
 
