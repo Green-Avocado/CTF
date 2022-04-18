@@ -4,6 +4,7 @@ This repository contains a collection of writeups for CTF challenges.
 
 ### 2022
 
+- [TAMUctf](./tamuctf2022)
 - [SecurinetQuals](./securinetquals2022)
 - [Midnightsun CTF Qualifiers](./midnightsunquals2022)
 - [UTCTF](./utctf2022)
