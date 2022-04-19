@@ -2,7 +2,39 @@
 
 ## Challenge
 
+Connecting to the challenge gives us a binary encoded as a hexadecimal string.
+
+We must then send an input, also encoded as a hexadecimal string, which will cause the binary to exit with a status code of 0.
+
+The binary consists of around 1000 functions, many of which call one of several functions each, depending on user input.
+A portion of these functions include an `exit(1)` call, and only one includes `exit(0)`.
+
+At each function, we enter an unsigned integer followed by a newline.
+This is used to determine the next call made by the function.
+
 ## Solution
+
+There are too many branches for angr to handle on its own, so we have to guide it quite a bit through the exploration process.
+
+First, we can use radare2 to find the call to `exit(0)`.
+
+If we generate a control-flow graph, we can then identify paths from the start of `main` to the desired `exit` call.
+A problem arises, however, when we try generating the shortest path.
+The path includes calls to the other functions, but it also includes calls to library functions.
+The first time we tried generating a path, it used `__isoc99_scanf` to jump from one function to another in a way that should not have been possible.
+
+To fix this, we removed all nodes from the graph except for `main` and the named functions included in the binary.
+
+We tried having angr solve this, ignoring any nodes not in path, and searching for the target node.
+Unfortunately, this still proved too complex for angr to solve, we would have to provide more guidance.
+
+Instead, we had angr start at each node and explore to reach the next node.
+We did this for every node in the path until it reached the end.
+This method was much more successful and took very little time to complete.
+
+We added replaced `__isoc99_scanf` with a hook which would record the numbers in a list.
+As the path was straightforward, without complicated branching that might require backtracking, each stage called `__isoc99_scanf` once.
+This allowed us to use a simple list and append the symbolic variables to it, without having to keep track of depth.
 
 ## Script
 
