@@ -4,6 +4,7 @@ This repository contains a collection of writeups for CTF challenges.
 
 ### 2022
 
+- [b01lers CTF](./b01lersctf2022)
 - [TAMUctf](./tamuctf2022)
 - [SecurinetQuals](./securinetquals2022)
 - [Midnightsun CTF Qualifiers](./midnightsunquals2022)
@@ -39,7 +40,7 @@ This repository contains a collection of writeups for CTF challenges.
 - [Cyber Apocalypse](./cyberapocalypse2021)
 - [RITSEC CTF](./ritsecctf2021)
 - [Midnightsun CTF Qualifiers](./midnightsunquals2021)
-- [bo1lers CTF](./bo1lersctf2021)
+- [b01lers CTF](./b01lersctf2021)
 - [angstromCTF](./angstromctf2021)
 - [VolgaCTF Qualifiers](./volgaquals2021)
 - [PicoCTF](./picoctf2021)
