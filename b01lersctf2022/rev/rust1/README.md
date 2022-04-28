@@ -167,7 +167,7 @@ Check1 failed
 
 If we look for the block which references `"Check1 failed"`, then follow the edge preceeding it, we find the following block:
 
-```
+```asm
 0000a832  488bbc24e0000000   mov     rdi, qword [rsp+0xe0 {var_108}]
 0000a83a  0fb607             movzx   eax, byte [rdi]
 0000a83d  0fb64f01           movzx   ecx, byte [rdi+0x1]
