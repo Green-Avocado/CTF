@@ -190,7 +190,7 @@ If we enter this as our powerup, we are given the flag.
 
 ## Script
 
-```
+```py
 #!/usr/bin/env python3
 
 from z3 import *
