@@ -23,18 +23,18 @@ if len(powerup) == 0:
 
     s.add(nums[8] + nums[9] > 0x63)
 
-    s.add(nums[10] / nums[0xb] == 2)
-    s.add(nums[10] % nums[0xb] == 0)
+    s.add(nums[10] / nums[0xb] == 0x2)
+    s.add(nums[10] % nums[0xb] == 0x0)
 
     s.add(nums[0xd] * nums[0xc] >= 0x3e9)
 
     s.add(nums[0xf] + nums[0xe] * 5 >= 0xc9)
 
-    s.add(nums[0x10] - nums[0x11] == ord('*'))
+    s.add(nums[0x10] - nums[0x11] == 0x2a)
 
-    s.add(nums[0x12] - nums[0x13] == 2)
+    s.add(nums[0x12] - nums[0x13] == 0x2)
 
-    s.add(nums[0x15] * nums[0x14] >= 900)
+    s.add(nums[0x15] * nums[0x14] >= 0x384)
 
     s.check()
     m = s.model()
