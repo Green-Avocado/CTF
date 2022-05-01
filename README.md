@@ -4,6 +4,7 @@ This repository contains a collection of writeups for CTF challenges.
 
 ### 2022
 
+- [NahamCon CTF](./nahamconctf2022)
 - [b01lers CTF](./b01lersctf2022)
 - [TAMUctf](./tamuctf2022)
 - [SecurinetQuals](./securinetquals2022)
