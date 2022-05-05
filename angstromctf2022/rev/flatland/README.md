@@ -8,9 +8,7 @@
 - Use the fixed CFG to reverse engineer the logic that validates a flag.
 - Create a script to find the flag by checking possibly valid characters according to the validation logic.
 
-Also while I was doing this my teammates solved it with instruction counting
-...
-but my method is cooler >:(
+*Also while I was doing this my teammates solved it with instruction counting...  but my method is cooler >:(*
 
 ## Challenge
 
@@ -170,14 +168,24 @@ for x in main.hlil.instructions:
     if x.operation == HighLevelILOperation.HLIL_CASE:
         node = cases[x.operands[0][0].constant]['node']
         node.lines = list(x.lines)
+
+        # whether or not to display HLIL code in a node
         if showInstructions:
             node.lines += ['='*16] + list(x.body.lines)
 ```
 
+Now that we have mapped each case to its initial basic block and a node in our graph, we can parse these blocks to begin recovering control flow.
+
 ### Modeling control flow
 
+We cannot simply check the end of the basic block for the value of RAX as some cases have subbranches.
+To get all the possible next nodes for a case, we need to recursively analyze its blocks and get the possible values of RAX for each block that jumps back to the start of the loop.
+
+The function below, `getPossibleRange(block)`, does exactly that.
+
 ```py
-# Possible values for the next case number
+# All possible values for the next case number
+# This should be a range of [0x0, 0xf]
 possible_rcx = ssa[49].get_ssa_var_possible_values(ssa[49].vars_read[0]).ranges[0]
 
 
@@ -208,6 +216,9 @@ def getPossibleRange(block):
                 # parse possible_rax to extract possible next nodes
                 if hasattr(possible_rax, 'ranges'):
                     for rax_range in possible_rax.ranges:
+
+                        # restrict the possible range to be within possible values of RCX
+                        # i.e. only existing cases are possible next nodes
                         bounded_start = max(rax_range.start, possible_rcx.start)
                         bounded_end = min(rax_range.end, possible_rcx.end)
                         possible.update([cases[ii]['node'] for ii in range(bounded_start, bounded_end + 1, rax_range.step)])
