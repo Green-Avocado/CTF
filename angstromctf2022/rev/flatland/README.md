@@ -94,7 +94,7 @@ If we enter a random input, we are given the following response:
 
 ### Extracting cases
 
-To start reconstructing a control flow graph, we should first extract the individual cases that will act as the nodes of our graph.
+First, these are some useful handles we will be using to interact with Binary Ninja:
 
 ```py
 # main function
@@ -104,9 +104,19 @@ main = bv.get_functions_by_name('main')[0]
 ssa = main.mmlil.ssa_form
 ```
 
+To start reconstructing a control flow graph, we should first extract the individual cases that will act as the nodes of our graph.
+
 ```py
+# dictionary containing a node and basic block for each case in the switch statement
 cases = {}
+
+
+# jump table used by the switch statement
 jump_table = bv.get_data_var_at(0x402010).value
+
+
+# graph used to display the reconstructed CFG
+# entry_node and exit_note represent the entry and exit points of the program
 graph = FlowGraph()
 
 entry_node = FlowGraphNode(graph)
@@ -166,6 +176,7 @@ def getPossibleRange(block):
         return possible
 
     # if the block has an immediate outgoing edge to the start of the loop
+    # we need to check the possible values of RAX to determine the next node(s)
     if 13 in [edge.target.start for edge in block.outgoing_edges]:
 
         # iterate over the instructions in the block, starting at the bottom
