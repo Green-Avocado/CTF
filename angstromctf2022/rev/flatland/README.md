@@ -165,10 +165,17 @@ def getPossibleRange(block):
         possible.add(exit_node)
         return possible
 
+    # if the block has an immediate outgoing edge to the start of the loop
     if 13 in [edge.target.start for edge in block.outgoing_edges]:
+
+        # iterate over the instructions in the block, starting at the bottom
         for i in range(block.end - 1, block.start - 1, -1):
+
+            # get the last line (highest address) that modifies RAX
             if 'rax' in [x.name for x in ssa[i].vars_written]:
                 possible_rax = ssa[i].get_ssa_var_possible_values(ssa[i].vars_written[0])
+
+                # parse possible_rax to extract possible next nodes
                 if hasattr(possible_rax, 'ranges'):
                     for rax_range in possible_rax.ranges:
                         bounded_start = max(rax_range.start, possible_rcx.start)
@@ -178,9 +185,14 @@ def getPossibleRange(block):
                     possible.update([cases[ii]['node'] for ii in possible_rax.values])
                 else:
                     possible.add(cases[possible_rax.value]['node'])
+
                 break
+
+    # recurse over outgoing edges and update the possible set
     for edge in block.outgoing_edges:
         possible.update(getPossibleRange(edge.target))
+
+    # return the possble next nodes according to this block
     return possible
 ```
 
@@ -221,6 +233,7 @@ From either example, we can see that the underconstrained cases are `case 9`, `c
 ...
 
 if 'rax' in [x.name for x in ssa[i].vars_written]:
+
     # If the next node is determined by r15, set the next node to 0xf
     if len(ssa[i].non_ssa_form.vars_read) == 1 and ssa[i].non_ssa_form.vars_read[0].name == 'r15':
         possible.add(cases[0xf]['node'])
