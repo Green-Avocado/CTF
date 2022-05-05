@@ -8,9 +8,52 @@ Using BinaryNinja to extract control flow.
 
 ## Solution
 
+```py
+def getPossibleRange(block):
+    possible = set()
+    if block.start == 13:
+        return possible
+    if len(block.outgoing_edges) == 0:
+        possible.add(exit_node)
+        return possible
+    if 13 in [edge.target.start for edge in block.outgoing_edges]:
+        for i in range(block.end - 1, block.start - 1, -1):
+            if 'rax' in [x.name for x in ssa[i].vars_written]:
+                possible_rax = ssa[i].get_ssa_var_possible_values(ssa[i].vars_written[0])
+                if hasattr(possible_rax, 'ranges'):
+                    for rax_range in possible_rax.ranges:
+                        bounded_start = max(rax_range.start, possible_rcx.start)
+                        bounded_end = min(rax_range.end, possible_rcx.end)
+                        possible.update([cases[ii]['node'] for ii in range(bounded_start, bounded_end + 1, rax_range.step)])
+                elif hasattr(possible_rax, 'values'):
+                    possible.update([cases[ii]['node'] for ii in possible_rax.values])
+                else:
+                    possible.add(cases[possible_rax.value]['node'])
+                break
+    for edge in block.outgoing_edges:
+        possible.update(getPossibleRange(edge.target))
+    return possible
+```
+
+```py
+if bounded_start <= 0 and bounded_end >= 0xf:
+    continue
+```
+
 ![Over approximated CFG](./resources/over_approximation_cases.png) ![Under approximated CFG](./resources/under_approximation_cases.png)
 
+```py
+if len(ssa[i].non_ssa_form.vars_read) == 1 and ssa[i].non_ssa_form.vars_read[0].name == 'r15':
+    possible.add(cases[0xf]['node'])
+    break
+```
+
 ![Better approximation CFG](./resources/better_approximation.png)
+
+```py
+for i in [1, 3, 5]:
+    cases[0xf]['node'].add_outgoing_edge(BranchType.UserDefinedBranch, cases[i]['node'])
+```
 
 ![Fixed CFG](./resources/fixed_cfg.png)
 
