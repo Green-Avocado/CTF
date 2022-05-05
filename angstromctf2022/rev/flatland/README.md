@@ -17,6 +17,30 @@ We're given an x86-64 binary to reverse engineer.
 To start reconstructing a control flow graph, we should first extract the individual cases that will act as the nodes of our graph.
 
 ```py
+# main function
+main = bv.get_functions_by_name('main')[0]
+
+# Mapped Medium Level IL SSA Form of the main function
+ssa = main.mmlil.ssa_form
+```
+
+```py
+cases = {}
+jump_table = bv.get_data_var_at(0x402010).value
+graph = FlowGraph()
+
+entry_node = FlowGraphNode(graph)
+entry_node.lines = [f"ENTRY"]
+graph.append(entry_node)
+
+exit_node = FlowGraphNode(graph)
+exit_node.lines = [f"EXIT"]
+graph.append(exit_node)
+
+
+# For each case in the switch statement:
+# - Set the node
+# - Set the initial basic block
 for i in range(len(jump_table)):
     for block in ssa.basic_blocks:
         if block.start == ssa.get_instruction_start(jump_table[i]):
@@ -31,6 +55,8 @@ for i in range(len(jump_table)):
 We may also want to display the code corresponding to these cases.
 
 ```py
+# Add the case number and High Level IL instructions to each node
+# This will be displayed on the graph
 for x in main.hlil.instructions:
     if x.operation == HighLevelILOperation.HLIL_CASE:
         node = cases[x.operands[0][0].constant]['node']
@@ -42,13 +68,23 @@ for x in main.hlil.instructions:
 ### Modeling control flow
 
 ```py
+# Possible values for the next case number
+possible_rcx = ssa[49].get_ssa_var_possible_values(ssa[49].vars_read[0]).ranges[0]
+
+
+# Get the possible next nodes from a given block
 def getPossibleRange(block):
     possible = set()
+
+    # return an empty set if we reach the start of the loop
     if block.start == 13:
         return possible
+
+    # return a set containing the exit_node if we reach the final block 
     if len(block.outgoing_edges) == 0:
         possible.add(exit_node)
         return possible
+
     if 13 in [edge.target.start for edge in block.outgoing_edges]:
         for i in range(block.end - 1, block.start - 1, -1):
             if 'rax' in [x.name for x in ssa[i].vars_written]:
@@ -72,8 +108,22 @@ We will find that the graph produced by the code above is far too general to be 
 For now, let's hide the outgoing edges for cases where the next node can be any node.
 
 ```py
-if bounded_start <= 0 and bounded_end >= 0xf:
-    continue
+# in def getPossibleRange(block):
+
+...
+
+if hasattr(possible_rax, 'ranges'):
+    for rax_range in possible_rax.ranges:
+        bounded_start = max(rax_range.start, possible_rcx.start)
+        bounded_end = min(rax_range.end, possible_rcx.end)
+
+        # Exclude outgoing edges if the node is underconstrained
+        if bounded_start <= 0 and bounded_end >= 0xf:
+            continue
+
+        possible.update([cases[ii]['node'] for ii in range(bounded_start, bounded_end + 1, rax_range.step)])
+
+...
 ```
 
 This will give us only edges which we can be reasonable certain are possible.
@@ -87,14 +137,22 @@ The resulting graph is an underapproximation of the actual control flow of the p
 From either example, we can see that the underconstrained cases are `case 9`, `case 0xc`, and `case 0xf`.
 
 ```py
-if len(ssa[i].non_ssa_form.vars_read) == 1 and ssa[i].non_ssa_form.vars_read[0].name == 'r15':
-    possible.add(cases[0xf]['node'])
-    break
+# in def getPossibleRange(block):
+...
+
+if 'rax' in [x.name for x in ssa[i].vars_written]:
+    # If the next node is determined by r15, set the next node to 0xf
+    if len(ssa[i].non_ssa_form.vars_read) == 1 and ssa[i].non_ssa_form.vars_read[0].name == 'r15':
+        possible.add(cases[0xf]['node'])
+        break
+
+...
 ```
 
 ![Better approximation CFG](./resources/better_approximation.png)
 
 ```py
+# Manually add outgoing edges from case 0xf to cases 1, 3, 5
 for i in [1, 3, 5]:
     cases[0xf]['node'].add_outgoing_edge(BranchType.UserDefinedBranch, cases[i]['node'])
 ```
