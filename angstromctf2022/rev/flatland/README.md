@@ -12,15 +12,11 @@ We're given an x86-64 binary to reverse engineer.
 
 Running the binary will greet us with the following message, then wait for user input:
 
-```
-I call our world Flatland, not because we call it so, but to make its nature clearer to you, my happy solvers, who are privileged to have control flow.
-```
+> I call our world Flatland, not because we call it so, but to make its nature clearer to you, my happy solvers, who are privileged to have control flow.
 
 If we enter a random input, we are given the following response:
 
-```
-All the substantial binaries of Flatland itself appear no better than the offspring of a diseased imagination, or the baseless instructions of a CPU.
-```
+> All the substantial binaries of Flatland itself appear no better than the offspring of a diseased imagination, or the baseless instructions of a CPU.
 
 ### Pseudo C
 
