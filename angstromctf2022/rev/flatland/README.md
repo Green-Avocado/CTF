@@ -4,9 +4,42 @@ Using BinaryNinja to extract control flow.
 
 ## Challenge
 
+![Challenge Card](./resources/challenge.png)
+
+We're given an x86-64 binary to reverse engineer.
+
 ![Original CFG](./resources/original_cfg.png)
 
 ## Solution
+
+### Extracting cases
+
+To start reconstructing a control flow graph, we should first extract the individual cases that will act as the nodes of our graph.
+
+```py
+for i in range(len(jump_table)):
+    for block in ssa.basic_blocks:
+        if block.start == ssa.get_instruction_start(jump_table[i]):
+            node = FlowGraphNode(graph)
+            graph.append(node)
+            cases[i] = {
+                    'block': block,
+                    'node': node,
+                    }
+```
+
+We may also want to display the code corresponding to these cases.
+
+```py
+for x in main.hlil.instructions:
+    if x.operation == HighLevelILOperation.HLIL_CASE:
+        node = cases[x.operands[0][0].constant]['node']
+        node.lines = list(x.lines)
+        if showInstructions:
+            node.lines += ['='*16] + list(x.body.lines)
+```
+
+### Modeling control flow
 
 ```py
 def getPossibleRange(block):
@@ -35,12 +68,23 @@ def getPossibleRange(block):
     return possible
 ```
 
+We will find that the graph produced by the code above is far too general to be of any use.
+For now, let's hide the outgoing edges for cases where the next node can be any node.
+
 ```py
 if bounded_start <= 0 and bounded_end >= 0xf:
     continue
 ```
 
-![Over approximated CFG](./resources/over_approximation_cases.png) ![Under approximated CFG](./resources/under_approximation_cases.png)
+This will give us only edges which we can be reasonable certain are possible.
+The resulting graph is an underapproximation of the actual control flow of the program, but can be used to determine a more accurate representation.
+
+
+| Overapproximation | Underapproximation |
+|-------------------|--------------------|
+| ![Over approximated CFG](./resources/over_approximation_cases.png) | ![Under approximated CFG](./resources/under_approximation_cases.png) |
+
+From either example, we can see that the underconstrained cases are `case 9`, `case 0xc`, and `case 0xf`.
 
 ```py
 if len(ssa[i].non_ssa_form.vars_read) == 1 and ssa[i].non_ssa_form.vars_read[0].name == 'r15':
@@ -57,7 +101,13 @@ for i in [1, 3, 5]:
 
 ![Fixed CFG](./resources/fixed_cfg.png)
 
-## Fix CFG Script
+### Understanding flag validation
+
+### Extracting the flag
+
+## Scripts
+
+### Fix CFG
 
 ```py
 def generateFixedCFG(showInstructions=True):
@@ -144,7 +194,7 @@ def generateFixedCFG(showInstructions=True):
     bv.show_graph_report("Fixed CFG", graph)
 ```
 
-## Solve Script
+### Solve for flag
 
 ```py
 #!/usr/bin/env python3
@@ -160,7 +210,7 @@ def solveFlag(known):
     if len(known) == 0x18:
         print(known)
         return
-    if known[-1] == '}':
+    elif known[-1] == '}':
         return
     candidates = set()
     for m in maps:

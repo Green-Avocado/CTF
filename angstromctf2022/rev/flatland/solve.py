@@ -11,7 +11,7 @@ def solveFlag(known):
     if len(known) == 0x18:
         print(known)
         return
-    if known[-1] == '}':
+    elif known[-1] == '}':
         return
     candidates = set()
     for m in maps:
