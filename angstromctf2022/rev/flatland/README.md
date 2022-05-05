@@ -274,7 +274,36 @@ The resulting graph is an underapproximation of the actual control flow of the p
 |-------------------|--------------------|
 | ![Over approximated CFG](./resources/over_approximation_cases.png) | ![Under approximated CFG](./resources/under_approximation_cases.png) |
 
-From either example, we can see that the underconstrained cases are `case 9`, `case 0xc`, and `case 0xf`.
+From either CFG, we can see that the underconstrained cases are `case 9`, `case 0xc`, and `case 0xf`.
+
+Looking at cases 9 and 0xc, we can see that both of them set RAX to the value of R15:
+
+```c
+00401159                  case 9:
+00401159                  {
+00401159                      rbp = (rbp - 1);
+0040115c                      rbx = -1;
+00401163                      rax = r15;
+00401166                      continue;
+00401166                  }
+
+                          ...
+
+00401373                  case 0xc:
+00401373                  {
+00401373                      rbx = *(int64_t*)(&var_64028 + (((int64_t)rbp) << 0xc));
+00401377                      rbp = (rbp - 1);
+0040137a                      rax = r15;
+0040137d                      continue;
+0040137d                  }
+```
+
+If we look through other cases, `case 1`, `case 4`, and `case 0xe` are the only ones that set the value of R15.
+
+Note from the underapproximated CFG that `case 0xe` is a dominator of `case 9` and `case 0xc`.
+Also notice that it is a post-dominator of `case 1` and `case 4`.
+
+That is to say that `case 0xe` will always be run before `case 9` or `case 0xc`, and that `case 0xe` will always be run after `case 1` or `case 4`.
 
 ```py
 # in def getPossibleRange(block):
