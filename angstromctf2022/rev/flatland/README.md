@@ -8,6 +8,83 @@ Using BinaryNinja to extract control flow.
 
 We're given an x86-64 binary to reverse engineer.
 
+### Behaviour
+
+Running the binary will greet us with the following message, then wait for user input:
+
+```
+I call our world Flatland, not because we call it so, but to make its nature clearer to you, my happy solvers, who are privileged to have control flow.
+```
+
+If we enter a random input, we are given the following response:
+
+```
+All the substantial binaries of Flatland itself appear no better than the offspring of a diseased imagination, or the baseless instructions of a CPU.
+```
+
+### Pseudo C
+
+```c
+00401140  int32_t main(int32_t argc, char** argv, char** envp)
+
+00401140  {
+
+              ...
+
+00401170      char* rdi_1;
+00401170      while (true)
+00401170      {
+00401170          uint64_t rcx_1 = ((uint64_t)rax);
+00401175          void var_64028;
+00401175          void var_64020;
+00401175          if (rax <= 0xf)
+00401172          {
+00401177              switch (rcx_1)
+00401177              {
+00401183                  case 0:
+00401183                  {
+00401183                      puts("I call our world Flatland, not b…");
+0040118b                      int64_t rax_2 = (((int64_t)rbp) << 0xc);
+
+                              ...
+
+004011fd                      rbp = (rbp + 1);
+00401200                      r15 = 1;
+00401206                      rax = 0xd;
+0040120b                      continue;
+0040120b                  }
+0040127c                  case 1:
+0040127c                  {
+0040127c                      int64_t rax_12 = (((int64_t)rbp) << 0xc);
+00401284                      *(int64_t*)(&var_64028 + rax_12) = rbx;
+00401288                      *(int8_t*)((rbx + (&var_64028 + rax_12)) + 0x10) = 1;
+0040128d                      *(int64_t*)(&var_64020 + rax_12) = 1;
+00401296                      rax = 4;
+0040129b                      continue;
+0040129b                  }
+
+                          ...
+
+0040125b                  case 0xf:
+0040125b                  {
+0040125b                      rax = 3;
+00401264                      if (rbx != -1)
+00401260                      {
+0040126d                          rax = *(int32_t*)(&var_64020 + (((int64_t)rbp) << 0xc));
+00401269                      }
+00401271                      rbp = (rbp - 1);
+00401271                      break;
+00401271                  }
+00401271              }
+00401271          }
+00401175      }
+004013e2      puts(rdi_1);
+004013f6      return rbx_1;
+004013f6  }
+```
+
+### Control Flow Graph
+
 ![Original CFG](./resources/original_cfg.png)
 
 ## Solution
@@ -163,7 +240,7 @@ for i in [1, 3, 5]:
 
 ### Extracting the flag
 
-## Scripts
+## Full Scripts
 
 ### Fix CFG
 
