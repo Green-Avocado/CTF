@@ -361,6 +361,7 @@ rbx = *(int64_t*)(&var_64028 + (((int64_t)rbp) << 0xc));
 RBX is set to a variable on the stack at an unknown offset which depends on RBP.
 However, we now have enough of the control flow recovered that we can determine the possible values of RBP with reasonable confidence.
 We would be able to determine exactly where on the stack RBX is being set from and thus, we could determine the possible values of RBX.
+(Note that in the above CFG, RBP is renamed to `index`, as it is being used to index an array with elements of size 0x1000).
 
 Fortunately for us, this is not too difficult as `case 0xe` is a dominator of `case 0xf` and it sets exactly this stack variable.
 It turns out that, before setting R15 to 0xf, it stores the previous value of R15 into the stack variable in question.
@@ -393,9 +394,31 @@ If we now run our script, we will have a complete recovered CFG of the program:
 
 ![Fixed CFG](./resources/fixed_cfg.png)
 
-From this image, we can start to see a main outer loop, a smaller nested loop, and branches that lead to the program terminating in success or failure.
+From this image, we can see a main outer loop, a smaller nested loop, and branches that lead to the program terminating in success or failure.
+
+Using the recovered CFG, we can now try to understand the algorithm behind the flag validation.
+
+Looking at the CFG, there are a couple useful things to note beforehand:
+
+- The incoming and outgoing values for RBP for a given block are known and constant.
+This could be done with constant propagation over the fixed CFG, or we can do it manually as there aren't many cases.
+For example, here is a summary of the indexes for different parts of the CFG.
+(Ranges are based on control flow, not numeric order).
+  - the start of the function (`case 0`) has an index of 0
+  - the outer-loop start `case 0xd` and `case 0xe` have an index of 1
+  - `case 0x7` and the inner-loop (`case 8` to `case 0xf`) have an index of 2
+  - the post-inner-loop (`case 0xf` to `case 4`) has an index of 0
+- the outer loop iterates over characters in the flag guess, as it starts by receiving a character from `getc()`, then processes it.
+- The inner loop validates a single character from the each guess and will branch to one of three options:
+  - continue
+  - exit with success
+  - exit with failure
 
 ### Understanding flag validation
+
+To understand the validation algorithm, we need to start by determining how our user input is interpreted and how this is being processed by the inner loop.
+
+
 
 ### Extracting the flag
 
