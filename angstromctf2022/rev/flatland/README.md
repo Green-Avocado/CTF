@@ -1,12 +1,19 @@
 # Flatland
 
-Using BinaryNinja to extract control flow.
+![Challenge Card](./resources/challenge.png)
+
+## Summary
+
+- Use the Binary Ninja Python APIs to automate extracting to control flow of the program.
+- Use the fixed CFG to reverse engineer the logic that validates a flag.
+- Create a script to find the flag by checking possibly valid characters according to the validation logic.
 
 ## Challenge
 
-![Challenge Card](./resources/challenge.png)
-
 We're given an x86-64 binary to reverse engineer.
+
+The binary is a flag checker.
+We can enter a guess and determine whether or not the guess is correct based on the response of the program.
 
 ### Behaviour
 
