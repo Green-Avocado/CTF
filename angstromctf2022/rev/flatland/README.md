@@ -4,10 +4,11 @@ Using BinaryNinja to extract control flow.
 
 ## Challenge
 
+![Original CFG](./resources/original_cfg.png)
+
 ## Solution
 
 ![Fixed CFG with code](./resources/full_cfg_code.png)
-![Fixed CFG with cases](./resources/full_cfg_cases.png)
 
 ## Script
 
