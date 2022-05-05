@@ -95,17 +95,29 @@ It would be very difficult, from this diagram alone, to determine how the progra
 
 If we are able to recover the original control flow, we will have defeated a major source of the obfuscation and the program will be significantly easier to reverse engineer.
 
+Before we begin, there are some important things to note about the program:
+
+- All cases lead to the top of the loop or to the exit node.
+- Any case which goes back to the top of the loop will set the RAX register beforehand.
+- Some cases have branches within, which may result in a different RAX values.
+
 ### Extracting cases
 
+The Binary Ninja Python API is very efficient at automating processes of this sort.
 First, these are some useful handles we will be using to interact with Binary Ninja:
 
 ```py
 # main function
 main = bv.get_functions_by_name('main')[0]
 
+
 # Mapped Medium Level IL SSA Form of the main function
 ssa = main.mmlil.ssa_form
 ```
+
+We are using Medium Level IL SSA Form as static single assignment will allow us to easily find the possible values of a variable.
+This will be especially useful for determining which cases may be reached from a given block.
+We are using Mapped mode so we can find the initial basic block of a case given a jump table destination, as the addresses of assembly instructions is mapped to the Medium Level IL lines in this mode.
 
 To start reconstructing a control flow graph, we should first extract the individual cases that will act as the nodes of our graph.
 
@@ -146,6 +158,10 @@ for i in range(len(jump_table)):
 ```
 
 We may also want to display the code corresponding to these cases.
+For the code displayed in each node, I chose High Level IL for two reasons:
+
+- It is the most concise, so it will be easier to get a sense of how the program generally works from a CFG view.
+- It is the easiest to parse cases from linear view, as the other views do not simplify branches within a case.
 
 ```py
 # Add the case number and High Level IL instructions to each node
