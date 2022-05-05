@@ -8,7 +8,7 @@ Using BinaryNinja to extract control flow.
 
 ## Solution
 
-![Fixed CFG with code](./resources/full_cfg_code.png)
+![Fixed CFG](./resources/fixed_cfg.png)
 
 ## Script
 
