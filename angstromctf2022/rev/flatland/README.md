@@ -8,9 +8,7 @@ Using BinaryNinja to extract control flow.
 
 ## Solution
 
-![Over approximated CFG](./resources/over_approximation_cases.png)
-
-![Under approximated CFG](./resources/under_approximation_cases.png)
+![Over approximated CFG](./resources/over_approximation_cases.png) ![Under approximated CFG](./resources/under_approximation_cases.png)
 
 ![Fixed CFG](./resources/fixed_cfg.png)
 
