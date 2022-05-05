@@ -276,7 +276,7 @@ The resulting graph is an underapproximation of the actual control flow of the p
 
 From either CFG, we can see that the underconstrained cases are `case 9`, `case 0xc`, and `case 0xf`.
 
-Looking at cases 9 and 0xc, we can see that both of them set RAX to the value of R15:
+Looking at `case 9` and `case 0xc`, we can see that both of them set RAX to the value of R15:
 
 ```c
 00401159                  case 9:
@@ -302,8 +302,13 @@ If we look through other cases, `case 1`, `case 4`, and `case 0xe` are the only 
 
 Note from the underapproximated CFG that `case 0xe` is a dominator of `case 9` and `case 0xc`.
 Also notice that it is a post-dominator of `case 1` and `case 4`.
-
 That is to say that `case 0xe` will always be run before `case 9` or `case 0xc`, and that `case 0xe` will always be run after `case 1` or `case 4`.
+
+Therefore, the value of R15 in `case 9` and `case 0xc` will always be determined by `case 0xe`.
+This is incredibly useful to us, as `case 0xe` sets R15 to a constant value of 0xf.
+
+Now we know that `case 9` and `case 0xe` will always lead to `case 0xf`.
+We can improve our approximation of the CFG by setting the outgoing edges for these nodes accordingly.
 
 ```py
 # in def getPossibleRange(block):
