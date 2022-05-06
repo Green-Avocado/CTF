@@ -418,9 +418,39 @@ For example, here is a summary of the indexes for different parts of the CFG.
 
 To understand the validation algorithm, we need to start by determining how our user input is interpreted and how this is being processed by the inner loop.
 
+We know that we start with `case 0`, which initializes the function.
 
+We then proceed to the outer loop, which begins at `case 0xd` and reads a character.
+We store the character read by `getc()` in offset_0, index=1.
+If `getc()` returns -1, we exit with failure, otherwise we contine to `case 0xe` inside the loop.
+
+`case 0xe` stores R15 on the stack at offset_8, index=1.
+It also sets RBX to the value stored in offset_0, index=1, which is the most recent character read.
+
+Next we clear the stack value at offset_0, index=2 and enter the inner loop.
+
+At the start of the inner loop, we check if offset_0, index=2 is equal to 0x18.
+If so, we continue to `case 0xb`, otherwise we go to `case 9`.
+
+Lets first follow the `case 9` path, as it is the simpler of the two.
+We start by setting RBX to -1 and go to `case 0xf`.
+In `case 0xf`, RBX is -1 so we go to `case 3`, which leads to the exit node.
+Thus, this is a failure case and we are to avoid this.
+
+Continuing to `case 0xb` then, we check if RBX (the last character read) is equal to the 
+
+We can also visualize this in a CFG with comments summarizing each case:
+
+![Summary CFG](./resources/cfg-summary.png)
 
 ### Extracting the flag
+
+## Other notes and ideas
+
+The use of the Binary Ninja could be improved to remove much of the manual processing.
+To do so, one might use SSA in conjunction with the modified CFG.
+- Without modifying the binary, you could use the CFG to create new SSA definitions, allowing you to trace back through the recovered CFG to find accurate values of variables.
+- It should be possible to get Binary Ninja to automatically find the correct definitions by patching the binary to match the recovered control flow.
 
 ## Full Scripts
 
