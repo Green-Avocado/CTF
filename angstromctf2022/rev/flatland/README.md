@@ -522,6 +522,62 @@ We can also visualize this in a CFG with comments summarizing each case:
 
 ### Extracting the flag
 
+Since there are 4 cases which each may validate a given pair of previous and current offsets, we may get multiple possible characters at any given stage.
+However, we can be fairly certain that only one input will reach the end while passing all checks and conforming with the flag format.
+
+Knowing this, we can write a script to go through these possibilities in a DFS.
+
+First, we can use Binary Ninja to extract the scrambled flag and both data arrays:
+
+```py
+from binaryninja import *
+
+bview = BinaryViewType.get_view_of_file('flatland')
+
+# the scrambled flag
+key = bview.get_ascii_string_at(0x402150).value
+
+# the data arrays mapping one index to another
+maps = bview.define_user_data_var(0x402090, Type.array(Type.array(Type.int(0x4), 0x18), 0x2), 'maps').value
+```
+
+Next, we recursively run through possible characters, discarding branches when they become invalid.
+
+```py
+def solveFlag(known):
+    # if we have successfully processed all 0x18 characters, print the flag
+    if len(known) == 0x18:
+        print(known)
+        return
+    # if we reach a '}' before the end of the flag, this input is invalid
+    elif known[-1] == '}':
+        return
+
+    candidates = set()
+
+    # if an unused index is mapped to the previous index, add it as a candidate
+    for m in maps:
+        for pair in enumerate(m):
+            for i in range(2):
+                if pair[i] == key.index(known[-1]) and key[pair[1-i]] not in known:
+                    candidates.add(key[pair[1-i]])
+    
+    # call solveFlag recursively on all candidates for the next character
+    for c in candidates:
+        solveFlag(known + c)
+```
+
+Finally, we know that the flag will start with `actf{`.
+We can set this as the initial known string and run the script.
+
+```py
+solveFlag('actf{')
+```
+
+In little time, this will print the flag.
+
+All things considered, it would've faster to instruction count :/
+
 ## Other notes and ideas
 
 The use of the Binary Ninja could be improved to remove much of the manual processing.
