@@ -576,7 +576,7 @@ solveFlag('actf{')
 
 In little time, this will print the flag.
 
-All things considered, it would've faster to instruction count :/
+All things considered, it would've been faster to instruction count :/
 
 ## Other notes and ideas
 
