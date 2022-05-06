@@ -427,9 +427,9 @@ If `getc()` returns -1, we exit with failure, otherwise we contine to `case 0xe`
 - At `case 0xe` we store R15 on the stack at offset_8, index=1.
 It also sets RBX to the value stored in offset_0, index=1, which is the most recent character read.
 
-- Next we clear the stack value at offset_0, index=2 and enter the inner loop.
+- Next, at `case 7`, we clear the stack value at offset_0, index=2 and enter the inner loop.
 
-- At the start of the inner loop, we check if offset_0, index=2 is equal to 0x18.
+- At the start of the inner loop, at `case 8`, we check if offset_0, index=2 is equal to 0x18.
 If so, we continue to `case 0xb`, otherwise we go to `case 9`.
 
 - Lets first follow the `case 9` path, as it is the simpler of the two.
@@ -447,6 +447,16 @@ Then, we go to `case 8`, which brings us back to the start of the inner loop.
 Then, we go to `case 0xf`.
 
 Okay, that was a lot to process.  let's take a moment to see what we can learn about the inner loop.
+We have a lot of references to the stack at offset_0, index=2.
+It is first defined in `case 7`, where it is set to 0.
+We then check if the character read by `getc()` is equal to the character at 0x402150 offset by the stack variable in question.
+Keep in mind that 0x402150 contains a scrambled flag with a value of `"NfTRcD1ontrw}4{mFl_Ad0ua"`.
+If these characters are not equal, we increment the stack variable and try again.
+
+From this, we can see that offset_0, index=2 stores the index of a character in the scrambled flag.
+At the end of the inner loop, we have set RBX to the index where our character equals a character in the scrambled flag.
+If our character cannot be found in the scrambled flag, we set RBX to -1.
+This is how the value of RBX is determined going into `case 0xf`.
 
 We can also visualize this in a CFG with comments summarizing each case:
 
