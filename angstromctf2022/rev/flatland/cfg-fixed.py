@@ -82,7 +82,7 @@ def generateFixedCFG(showInstructions=True, showSummary=True):
     summary = {
             0: [
                 '- zeros stack variables',
-                '- sets r15 to 1',
+                '- sets r15 to 1 (indicates 1st iteration)',
                 ],
             0xd: [
                 '- reads a character to [c]',
@@ -102,10 +102,10 @@ def generateFixedCFG(showInstructions=True, showSummary=True):
                 ],
             9: [
                 '- set [offset] to -1',
-                '- go to r15 (known to be 0xf)',
+                '- go to 0xf (known to be 0xf)',
                 ],
             0xb: [
-                '- check that [c] == key at offset [offset]',
+                '- check that [c] == (key at offset [offset])',
                 '- if true : go to 0xc',
                 '- if false : go to 0xa',
                 ],
@@ -114,38 +114,38 @@ def generateFixedCFG(showInstructions=True, showSummary=True):
                 '- go to 8',
                 ],
             0xc: [
-                '- go to 0xf',
+                '- go to 0xf (known to be 0xf)',
                 ],
             0xf: [
                 '- if [offset] == -1 : go to 3',
-                '- else : go to [saved_r15] (can be 1 or 5)',
+                '- else : go to [saved_r15] (1 on first iteration, 5 otherwise)',
                 ],
             3: [
                 '- exit failure',
                 ],
             1: [
                 '- set [prev_offset] to [offset]',
-                '- set [used_chars] at [offset] to 1',
+                '- set ([used_chars] at [offset]) to 1',
                 '- set [chars_read] to 1',
                 ],
             5: [
-                '- if [map0] at [prev_offset] == [offset]',
-                '  or [map0] at [offset] == [prev_offset]',
-                '  or [map1] at [prev_offset] == [offset]',
-                '  or [map1] at [offset] == [prev_offset] :',
-                '  - if [used_chars] at [offset] == 0 : go to 2',
+                '- if ([map0] at [prev_offset]) == [offset]',
+                '  or ([map0] at [offset]) == [prev_offset]',
+                '  or ([map1] at [prev_offset]) == [offset]',
+                '  or ([map1] at [offset]) == [prev_offset] :',
+                '  - if ([used_chars] at [offset]) == 0 : go to 2',
                 '  - else : go to 3',
                 '- else : go to 3',
                 ],
             2: [
                 '- set [prev_offset] to [offset]',
-                '- set [used_chars] at [offset] to 1',
+                '- set ([used_chars] at [offset]) to 1',
                 '- increment [chars_read] by 1',
                 '- if [chars_read] == 0x18 : go to 6',
                 '- else : go to 4',
                 ],
             4: [
-                '- set r15 to 5',
+                '- set r15 to 5 (indicates not 1st iteration)',
                 '- go to 0xd',
                 ],
             6: [

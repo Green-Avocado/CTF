@@ -8,6 +8,8 @@
 - Use the fixed CFG to reverse engineer the logic that validates a flag.
 - Create a script to find the flag by checking possibly valid characters according to the validation logic.
 
+A.k.a. overcomplicating a switch statement using Binary Ninja.
+
 Also while I was doing this my teammates solved it with instruction counting...
 but my method is cooler >:(
 
@@ -458,6 +460,35 @@ At the end of the inner loop, we have set RBX to the index where our character e
 If our character cannot be found in the scrambled flag, we set RBX to -1.
 This is how the value of RBX is determined going into `case 0xf`.
 
+- Moving on to `case 0xf`, we already found that it could lead to `case 0x3` if RBX == -1 and we know this is indicates failure.
+We can see that it also goes to `case 0x1` and `case 0x5`, depending on the stack value at offset_8, index=1.
+Recall that this value is defined in `case 0xe` and that it stores a previous value of R15.
+We can see that the initial value, the first time we reach this node, will be 1, as it is the value of R15 set by `case 0`.
+
+- `case 1` stores RBX at offset_0, index=0, recall that RBX was the offset of our character within the scrambled flag.
+It also sets the byte at offset(0x10 + RBX), index=0 to 1.
+Lastly, it sets offset_8, index=0 to 1 and goes to `case 4`.
+
+- Going back to the other possible branch, `case 5` is the part that checks if our input is part of the flag.
+It uses 2 data arrays which are located at 0x402090 and 0x4020f0.
+Both arrays contain 16 integers in the range [0,0xf].
+Using either array and the current/previous values of RBX, if you can reach one value by taking the element at the offset defined by the other value, then the check passes.
+Only one of the above cases must be true for this part of the case to pass.
+The other check is that the byte at offset(0x10 + RBX), index=0 must be equal to 0.
+If both of these checks pass then we proceed to `case 2`, otherwise we go to `case 3` and exit with failure.
+
+- `case 2` updates offset_0, index=0 to be our new RBX, replacing the old saved RBP.
+We can see then that offset_0, index=0 always stores the offset within the scrambled flag for the previous character read by `getc()`.
+Like `case 1`, this case also sets the byte at offset(0x10 + RBX), index=0 to 1.
+It also increments the value at offset_8, index=0 by 1, recall that this was originally set to 1 by `case 1`.
+Lastly, it checks if the value at offset_8, index=0 is equal to 0x18.
+If so, it goes to `case 6` which exits with success, otherwise it goes to `case 4`.
+
+- `case 4` is the end of the outer loop for branches which did not exit.
+It simply sets the value of R15 to 5, then goes back to the top of the loop at `case 0xd`.
+
+Now that we have looked at all the cases, let's try to decipher the logic of the outer loop.
+
 We can also visualize this in a CFG with comments summarizing each case:
 
 ![Summary CFG](./resources/cfg-summary.png)
@@ -577,7 +608,7 @@ def generateFixedCFG(showInstructions=True, showSummary=True):
     summary = {
             0: [
                 '- zeros stack variables',
-                '- sets r15 to 1',
+                '- sets r15 to 1 (indicates 1st iteration)',
                 ],
             0xd: [
                 '- reads a character to [c]',
@@ -597,10 +628,10 @@ def generateFixedCFG(showInstructions=True, showSummary=True):
                 ],
             9: [
                 '- set [offset] to -1',
-                '- go to r15 (known to be 0xf)',
+                '- go to 0xf (known to be 0xf)',
                 ],
             0xb: [
-                '- check that [c] == key at offset [offset]',
+                '- check that [c] == (key at offset [offset])',
                 '- if true : go to 0xc',
                 '- if false : go to 0xa',
                 ],
@@ -609,38 +640,38 @@ def generateFixedCFG(showInstructions=True, showSummary=True):
                 '- go to 8',
                 ],
             0xc: [
-                '- go to 0xf',
+                '- go to 0xf (known to be 0xf)',
                 ],
             0xf: [
                 '- if [offset] == -1 : go to 3',
-                '- else : go to [saved_r15] (can be 1 or 5)',
+                '- else : go to [saved_r15] (1 on first iteration, 5 otherwise)',
                 ],
             3: [
                 '- exit failure',
                 ],
             1: [
                 '- set [prev_offset] to [offset]',
-                '- set [used_chars] at [offset] to 1',
+                '- set ([used_chars] at [offset]) to 1',
                 '- set [chars_read] to 1',
                 ],
             5: [
-                '- if [map0] at [prev_offset] == [offset]',
-                '  or [map0] at [offset] == [prev_offset]',
-                '  or [map1] at [prev_offset] == [offset]',
-                '  or [map1] at [offset] == [prev_offset] :',
-                '  - if [used_chars] at [offset] == 0 : go to 2',
+                '- if ([map0] at [prev_offset]) == [offset]',
+                '  or ([map0] at [offset]) == [prev_offset]',
+                '  or ([map1] at [prev_offset]) == [offset]',
+                '  or ([map1] at [offset]) == [prev_offset] :',
+                '  - if ([used_chars] at [offset]) == 0 : go to 2',
                 '  - else : go to 3',
                 '- else : go to 3',
                 ],
             2: [
                 '- set [prev_offset] to [offset]',
-                '- set [used_chars] at [offset] to 1',
+                '- set ([used_chars] at [offset]) to 1',
                 '- increment [chars_read] by 1',
                 '- if [chars_read] == 0x18 : go to 6',
                 '- else : go to 4',
                 ],
             4: [
-                '- set r15 to 5',
+                '- set r15 to 5 (indicates not 1st iteration)',
                 '- go to 0xd',
                 ],
             6: [
