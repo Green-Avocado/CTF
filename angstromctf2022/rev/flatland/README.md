@@ -489,6 +489,33 @@ It simply sets the value of R15 to 5, then goes back to the top of the loop at `
 
 Now that we have looked at all the cases, let's try to decipher the logic of the outer loop.
 
+Whether we take `case 1` or `case 5` depends on the value stored at offset_8, index=1, which is the value of R15 before reaching `case 0xe`.
+This is determined initially by `case 0`, and later changed by `case 4`.
+We can see that this variable is used to determine whether this is the first iteration of the outer loop or not.
+If it is the first iteration, we will go to `case 1`.
+If not, we instead go to `case 5`.
+Notably, `case 1` does not have any logic to verify the character, this is all contained within `case 5`.
+We will see that this is because the verification requires knowledge of the current and previous character, which would be incomplete on the first iteration.
+
+We also have to look at the variables set by `case 1` and `case 2` (the path that follows `case 5`).
+
+Both of these set the previous offset to the current offset, which was found in the inner loop.
+This makes it possible to use the value in later tests.
+
+They also both set a byte to 1 at offset(0x10 + RBX), index=0, which is also checked by `case 5`.
+This is an array of booleans corresponding to the offsets of characters in the scrambled flag.
+Each value is initially 0, but changes to 1 when its respective offset has been encountered.
+The test in `case 5` ensures that each offset is only seen once, so there are no duplicate characters.
+
+Lastly, `case 1` sets offset_8, index=0 to 1, which is incremented by `case 2`.
+We can see that this is simply a counter which tracks how many characters have been processed.
+`case 2` checks this value to know when all 0x18 characters of the flag have been processed.
+If we have reached this point, having processed all 0x18 characters without exiting with failure, the flag has passed all checks and we exit with success.
+
+Now, if we look at the tests run in `case 5`, we can see that they are exactly as they seem.
+It checks if you can get the previous offset from the current offset, or vice versa, by using one as the index in either of the 2 data arrays which map one index to another.
+As mentioned already, it also checks that the current offset has not been used before.
+
 We can also visualize this in a CFG with comments summarizing each case:
 
 ![Summary CFG](./resources/cfg-summary.png)
