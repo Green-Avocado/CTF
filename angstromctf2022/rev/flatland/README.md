@@ -456,8 +456,12 @@ To do so, one might use SSA in conjunction with the modified CFG.
 
 ### Fix CFG
 
+<details>
+
+<summary>show script</summary>
+
 ```py
-def generateFixedCFG(showInstructions=True):
+def generateFixedCFG(showInstructions=True, showSummary=True):
     main = bv.get_functions_by_name('main')[0]
 
     ssa = main.mmlil.ssa_form
@@ -538,10 +542,96 @@ def generateFixedCFG(showInstructions=True):
     for i in [1, 3, 5]:
         cases[0xf]['node'].add_outgoing_edge(BranchType.UserDefinedBranch, cases[i]['node'])
 
+    summary = {
+            0: [
+                '- zeros stack variables',
+                '- sets r15 to 1',
+                ],
+            0xd: [
+                '- reads a character to [c]',
+                '- if [c] is -1 (i.e. getc fails) : go to 3',
+                '- else (i.e. getc succeeds) : go to 0xe',
+                ],
+            0xe: [
+                '- store r15 to [saved_r15]',
+                '- sets r15 to 0xf',
+                ],
+            7: [
+                '- sets [offset] to 0',
+                ],
+            8: [
+                '- if [offset] == 0x18 : go to 9',
+                '- else : go to 0xb',
+                ],
+            9: [
+                '- set [offset] to -1',
+                '- go to r15 (known to be 0xf)',
+                ],
+            0xb: [
+                '- check that [c] == key at offset [offset]',
+                '- if true : go to 0xc',
+                '- if false : go to 0xa',
+                ],
+            0xa: [
+                '- increment [offset] by 1',
+                '- go to 8',
+                ],
+            0xc: [
+                '- go to 0xf',
+                ],
+            0xf: [
+                '- if [offset] == -1 : go to 3',
+                '- else : go to [saved_r15] (can be 1 or 5)',
+                ],
+            3: [
+                '- exit failure',
+                ],
+            1: [
+                '- set [prev_offset] to [offset]',
+                '- set [used_chars] at [offset] to 1',
+                '- set [chars_read] to 1',
+                ],
+            5: [
+                '- if [map0] at [prev_offset] == [offset]',
+                '  or [map0] at [offset] == [prev_offset]',
+                '  or [map1] at [prev_offset] == [offset]',
+                '  or [map1] at [offset] == [prev_offset] :',
+                '  - if [used_chars] at [offset] == 0 : go to 2',
+                '  - else : go to 3',
+                '- else : go to 3',
+                ],
+            2: [
+                '- set [prev_offset] to [offset]',
+                '- set [used_chars] at [offset] to 1',
+                '- increment [chars_read] by 1',
+                '- if [chars_read] == 0x18 : go to 6',
+                '- else : go to 4',
+                ],
+            4: [
+                '- set r15 to 5',
+                '- go to 0xd',
+                ],
+            6: [
+                '- exit success',
+                ],
+            }
+
+    if showSummary:
+        for i in cases:
+            if showInstructions:
+                cases[i]['node'].lines += ['='*16]
+            cases[i]['node'].lines += summary[i]
+
     bv.show_graph_report("Fixed CFG", graph)
 ```
 
+</details>
+
 ### Solve for flag
+
+<details>
+
+<summary>show script</summary>
 
 ```py
 #!/usr/bin/env python3
@@ -570,6 +660,8 @@ def solveFlag(known):
 
 solveFlag('actf{')
 ```
+
+</details>
 
 ## Flag
 
