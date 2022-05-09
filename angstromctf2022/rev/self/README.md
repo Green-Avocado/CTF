@@ -143,13 +143,152 @@ Everything seems to be referenced relative to `data_4038`.
 Therefore, let's set the size to occupy the entire data section after it, which gives it a size of 0xfff integers.
 Let's also call it `data_arr` from here on.
 
+This turns our `main()` function into something slightly more readable:
+
+```c
+00001050  int32_t main(int32_t argc, char** argv, char** envp)
+00001052      uint32_t rdx = data_arr[0x800]
+00001061      uint32_t rbx = 0x800
+000010ac      do
+000010b0          uint32_t rax_3 = rdx u>> 0x18
+
+                  ...
+
+000010a3          rdx = data_arr[rbx + 1]
+000010a7          rbx = rbx + 1
+000010a0      while (rdx != 0)
+000010da      return 0
+```
+
 ### Understanding the branches
 
-### Extracting instruction definition
+There appears to be a number of nested branches which check RAX.
 
-### Disassembly
+```c
+000010b8          if (rax_3 == 0xd6)
+000011fc              data_arr[zx.q(rdx u>> 0xc & 0xfff)] = data_arr[zx.q(rdx & 0xfff)]
+000010be          else if (cond:0_1)
+00001070              bool cond:1_1 = rax_3 u<= 0x18
+00001073              if (rax_3 == 0x18)
+00001241                  uint64_t rax_29 = zx.q(rdx u>> 0xc & 0xfff)
+00001246                  data_arr[rax_29] = data_arr[rax_29] ^ data_arr[zx.q(rdx & 0xfff)]
+00001079              else if (cond:1_1)
+0000111b                  if (rax_3 == 0x16)
+000011b4                      uint64_t rax_16 = zx.q(rdx u>> 0xc & 0xfff)
+000011b9                      int32_t rcx_4 = data_arr[rax_16]
+000011c7                      int32_t rcx_6 = (rcx_4 + data_arr[zx.q(rdx & 0xfff)]) & 0xffffff
+000011cd                      data_arr[rax_16] = rcx_4 & 0xff000000
+000011da                      uint64_t rax_20 = zx.q(data_arr[zx.q(rbx)] u>> 0xc & 0xfff)
+000011df                      data_arr[rax_20] = data_arr[rax_20] + rcx_6
+00001124                  else
+00001124                      if (rax_3 != 0x17)
+00001124                          break
+00001135                      uint64_t rax_7 = zx.q(rdx u>> 0xc & 0xfff)
+0000113a                      int32_t rcx_1 = data_arr[rax_7]
+00001148                      int32_t rcx_3 = (rcx_1 - data_arr[zx.q(rdx & 0xfff)]) & 0xffffff
+0000114e                      data_arr[rax_7] = rcx_1 & 0xff000000
+0000115b                      uint64_t rax_11 = zx.q(data_arr[zx.q(rbx)] u>> 0xc & 0xfff)
+00001160                      data_arr[rax_11] = data_arr[rax_11] + rcx_3
+00001082              else if (rax_3 == 0x69)
+00001207                  int32_t rcx_7 = 1
+00001219                  if (data_arr[zx.q(rdx u>> 0xc & 0xfff)] == 0)
+0000121d                      rcx_7 = rdx & 0xfff
+00001227                  rbx = (rbx + rcx_7 - 1) & 0xfff
+0000108d              else
+0000108d                  if (rax_3 != 0xa6)
+0000108d                      break
+00001094                  rbx = rdx u>> 0xc & 0xfff
+000010c0          else
+000010c0              bool cond:2_1 = rax_3 u<= 0xf7
+000010c5              if (rax_3 == 0xf7)
+0000119c                  data_arr[zx.q(data_arr[zx.q(rbx)] u>> 0xc & 0xfff)] = getc(fp: stdin) | (data_arr[zx.q(rdx u>> 0xc & 0xfff)] & 0xff000000)
+000010d2              else
+000010d2                  if (not(cond:2_1) && rax_3 != 0xff)
+000010d2                      break
+000010cb                  if (cond:2_1)
+000010e5                      if (rax_3 == 0xd8)
+0000125a                          uint64_t rcx_11 = zx.q(rdx u>> 0xc & 0xfff)
+0000126b                          data_arr[rcx_11] = (rdx & 0xfff) | (data_arr[rcx_11] & 0xff000000)
+000010f0                      else
+000010f0                          if (rax_3 != 0xf6)
+000010f0                              break
+0000110c                          putc(c: data_arr[zx.q(rdx u>> 0xc & 0xfff)] & 0xffffff, fp: stdout)
+```
 
-### Converting to Python
+However, upon closer inspection, we can see that the inequalities can be ignored, as this is actually just a switch statement.
+
+We can rewrite the above code as follows:
+
+```c
+switch (rax_3)
+    case 0x16:
+        uint64_t rax_16 = zx.q(rdx u>> 0xc & 0xfff)
+        int32_t rcx_4 = data_arr[rax_16]
+        int32_t rcx_6 = (rcx_4 + data_arr[zx.q(rdx & 0xfff)]) & 0xffffff
+        data_arr[rax_16] = rcx_4 & 0xff000000
+        uint64_t rax_20 = zx.q(data_arr[zx.q(rbx)] u>> 0xc & 0xfff)
+        data_arr[rax_20] = data_arr[rax_20] + rcx_6
+        break
+    case 0x17:
+        uint64_t rax_7 = zx.q(rdx u>> 0xc & 0xfff)
+        int32_t rcx_1 = data_arr[rax_7]
+        int32_t rcx_3 = (rcx_1 - data_arr[zx.q(rdx & 0xfff)]) & 0xffffff
+        data_arr[rax_7] = rcx_1 & 0xff000000
+        uint64_t rax_11 = zx.q(data_arr[zx.q(rbx)] u>> 0xc & 0xfff)
+        data_arr[rax_11] = data_arr[rax_11] + rcx_3
+        break
+    case 0x18:
+        uint64_t rax_29 = zx.q(rdx u>> 0xc & 0xfff)
+        data_arr[rax_29] = data_arr[rax_29] ^ data_arr[zx.q(rdx & 0xfff)]
+        break
+    case 0x69:
+        int32_t rcx_7 = 1
+        if (data_arr[zx.q(rdx u>> 0xc & 0xfff)] == 0)
+            rcx_7 = rdx & 0xfff
+        rbx = (rbx + rcx_7 - 1) & 0xfff
+        break
+    case 0xa6:
+        rbx = rdx u>> 0xc & 0xfff
+    case 0xd6:
+        data_arr[zx.q(rdx u>> 0xc & 0xfff)] = data_arr[zx.q(rdx & 0xfff)]
+        break
+    case 0xd8:
+        uint64_t rcx_11 = zx.q(rdx u>> 0xc & 0xfff)
+        data_arr[rcx_11] = (rdx & 0xfff) | (data_arr[rcx_11] & 0xff000000)
+        break
+    case 0xf6:
+        putc(c: data_arr[zx.q(rdx u>> 0xc & 0xfff)] & 0xffffff, fp: stdout)
+        break
+    case 0xf7:
+        data_arr[zx.q(data_arr[zx.q(rbx)] u>> 0xc & 0xfff)] = getc(fp: stdin) | (data_arr[zx.q(rdx u>> 0xc & 0xfff)] & 0xff000000)
+    case 0xff:
+        break
+    default:
+        break
+```
+
+Now we can begin to decipher the logic for each case.
+Recall that RAX is defined by `uint32_t rax_3 = rdx u>> 0x18`, so we already know the first byte for each case as it is the condition of that case.
+
+Let's start with `case 0x16`.
+It takes the 17th to 40th most significant bits as an index for data, lets call this the first index.
+It also uses the 41st to 64th most significant bits as another index.
+We then take the sum of the elements at these indices and apply a bitmask to get only the least significant 3 bytes.
+The result is stored back in the array at the first index, with the most significant byte unchanged.
+
+Looking at the next cases, `case 0x17` and `case 0x18` do the same, except with subtraction and xor, respectively.
+The xor operation is slightly different as it modifies the entire integer, while addition and subtraction do not modify the most significant byte.
+
+From what we have checked so far, we can see that the operation is determined by the most significant byte of an integer.
+We can also see that the operands are determined by the remaining 3 bytes, split evenly between 2 operands.
+Recall that, at the end of each loop, the index is incremented and we read the next integer into this switch statement.
+This all suggests that the program is a virtual machine, with `data_arr` stores the program memory including bytecode.
+
+### Extracting instruction definitions
+
+### Disassembling bytecode
+
+### Converting bytecode to Python
 
 ### Patching
 
