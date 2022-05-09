@@ -93,29 +93,57 @@ If we watch the program in GDB, it seems to loop indefinitely within the `main()
 
 Let's look at the `main()` function to see if we can decipher what it's doing.
 
-### Understainding program behaviour
-
 We can see that most of the logic is contained within a main loop, with only a couple variable definitions before the loop.
 Also note that RBX is incremented with every iteration, and RDX is read from a value in data at an offset dependent on RBX.
 We can also see that RDX is used at the start of each loop to define RAX, which is used as the condition for almost all of the branches.
 
 ```c
-int32_t main(int32_t argc, char** argv, char** envp)
-    int32_t rdx = data_6038
-    int32_t rbx = 0x800
-    do
-        uint32_t rax_3 = rdx u>> 0x18
+00001050  int32_t main(int32_t argc, char** argv, char** envp)
+00001052      int32_t rdx = data_6038
+00001061      int32_t rbx = 0x800
+000010ac      do
+000010b0          uint32_t rax_3 = rdx u>> 0x18
 
-        ...
+                  ...
 
-        uint64_t rax_1 = zx.q(rbx + 1)
-        rdx = *(&data_4038 + (rax_1 << 2))
-        rbx = rax_1.d
-    while (rdx != 0)
-    return 0
+000010a0          uint64_t rax_1 = zx.q(rbx + 1)
+000010a3          rdx = *(&data_4038 + (rax_1 << 2))
+000010a7          rbx = rax_1.d
+000010a7      while (rdx != 0)
+000010da      return 0
 ```
 
+### Extracting types
 
+Let's drop down to medium level IL to see if we can determine the types of these variables:
+
+```c
+000010a0  rax_1 = zx.q(rbx + 1)
+000010a3  rdx = [data_4038 + (rax_1 << 2)].d
+000010a7  rbx = rax_1.eax
+000010ac  if (rdx == 0) then 23 @ 0x10d5 else 3 @ 0x10ae
+```
+
+We can see that RDX and RBX are both actually 4 bytes.
+Also, `rax_1` is being multiplied by 4 to use as an offset from `data_4038` and read 4 bytes.
+Thus, it is likely that `data_4038` is an array that stores elements of size 4.
+Also, RDX is likely to be an unsigned integer as it it used in an unsigned right shift.
+Using this information, let's set the type of these variables as `uint32_t`.
+
+We can see that RBX initially points at `data_6038`, but is set relative to `data_4038` for the remainder of the program.
+The bytes between 0x4038 and 0x6038 are null, while there is non-null data after 0x6038.
+We have to consider whether we should treat these as two separate arrays or as one large array.
+`data_6038` does start with data, and is the starting point for RDX, which implies it could be a separate array.
+However, since everything is indexed from `data_4038`, I figured it would be easier if they were treated as a single array.
+
+We also have to figure out where `data_4038` ends then.
+From our brief look at the `main()` function, there doesn't appear to be an upper limit to RBX except what can be stored in 4 bytes.
+There also aren't any references to data beyond what we've gone over.
+Everything seems to be referenced relative to `data_4038`.
+Therefore, let's set the size to occupy the entire data section after it, which gives it a size of 0xfff integers.
+Let's also call it `data_arr` from here on.
+
+### Understanding the branches
 
 ### Extracting instruction definition
 
