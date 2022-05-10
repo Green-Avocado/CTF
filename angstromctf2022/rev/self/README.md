@@ -622,7 +622,7 @@ while data[0x1a] != 0:
 
 Now we can see that the inner-most loop is simply xoring data after it with some constant values.
 Note that the second argument to xor is unchanged, and the first argument is always the result of the previous.
-Since `A ^ B ^ B = A`, and we are xoring an odd number of times, all this code does the equivalent of xoring the specified area once.
+Since `(A ^ B) ^ B = A`, and we are xoring an odd number of times, all this code does the equivalent of xoring the specified area once.
 Therefore, we can factor out the outer loops to get the following simplified code:
 
 ```py
