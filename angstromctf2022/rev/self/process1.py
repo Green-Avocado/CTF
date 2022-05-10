@@ -24,7 +24,7 @@ def process_ins(ins, offset):
             if target > 0x7ff:
                 target -= 0x1000
             target += offset
-            text = f'brz [{hex(arg1)}] {hex(target)}'
+            text = f'brz [{hex(arg1)}], {hex(target)}'
         case 0xa6:
             target = arg1 + 1
             text = f'jmp {hex(target)}'

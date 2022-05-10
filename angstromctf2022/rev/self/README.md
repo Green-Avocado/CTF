@@ -301,6 +301,8 @@ opcode arg1 arg2
 
 Also, let PC be the program counter, which is also the current value of RBX.
 
+One change we are going to make for clarity is to resolve relative branches to be absolute, so that both jumps and branches can be read the same.
+
 Now, going through all the cases as we did with `case 0x16`, we get the following definitions:
 
 | opcode | mnemonic | long name | notes |
@@ -309,7 +311,7 @@ Now, going through all the cases as we did with `case 0x16`, we get the followin
 | 0x16 | `add [arg1] [arg2]` | addition | adds `data_arr[arg1]` and `data_arr[arg2]` and stores the result in `data_arr[arg1]`; preserves the most significant byte of the destination
 | 0x17 | `sub [arg1] [arg2]` | subtraction | subtracts `data_arr[arg1]` and `data_arr[arg2]` and stores the result in `data_arr[arg1]`; preserves the most significant byte of the destination
 | 0x18 | `xor [arg1] [arg2]` | exclusive-or | xors `data_arr[arg1]` and `data_arr[arg2]` and stores the result in `data_arr[arg1]`
-| 0x69 | `brz [arg1] arg2` | branch if zero | changes PC by arg2 if `data_arr[arg1]` is zero
+| 0x69 | `brz [arg1] PC+arg2` | branch if zero | changes PC by arg2 if `data_arr[arg1]` is zero
 | 0xa6 | `jmp arg1` | jump | changes PC to `arg1`
 | 0xd6 | `mov [arg1] [arg2]` | move from memory | copies all 4 bytes from `data_arr[arg2]` to `data_arr[arg1]`
 | 0xd8 | `mov [arg1] arg2` | move absolute value | sets the least significant 20 bits of `data_arr[arg1]`; preserves the most significant byte of the destination; other bits are zeroed
@@ -319,11 +321,232 @@ Now, going through all the cases as we did with `case 0x16`, we get the followin
 
 ### Disassembling bytecode
 
+We can now use the Binary Ninja API to extract and disassemble the bytecode.
+
+Using a Python script, which can be found near the end of this writeup, we get the following assembly (after manually adding some newlines for clarity):
+
+```asm
+0x800 d8000000 mov [0x0], 0x0
+0x801 d8001001 mov [0x1], 0x1
+0x802 d80031ff mov [0x3], 0x1ff
+0x803 d8010000 mov [0x10], 0x0
+0x804 d8011000 mov [0x11], 0x0
+0x805 d8012000 mov [0x12], 0x0
+0x806 d8013000 mov [0x13], 0x0
+0x807 d8014000 mov [0x14], 0x0
+0x808 d8015000 mov [0x15], 0x0
+0x809 d8016000 mov [0x16], 0x0
+0x80a d8017000 mov [0x17], 0x0
+0x80b d8018000 mov [0x18], 0x0
+0x80c d8019000 mov [0x19], 0x0
+0x80d d801a000 mov [0x1a], 0x0
+0x80e d801b000 mov [0x1b], 0x0
+0x80f d801c000 mov [0x1c], 0x0
+0x810 d801d000 mov [0x1d], 0x0
+0x811 d801e000 mov [0x1e], 0x0
+0x812 d801f000 mov [0x1f], 0x0
+
+0x813 d801afff mov [0x1a], 0xfff
+0x814 6901a054 brz [0x1a], 0x868                XREFS: ['0x867']
+0x815 1701a001 sub [0x1a], [0x1]
+
+0x816 d8019fff mov [0x19], 0xfff
+0x817 69019050 brz [0x19], 0x867                XREFS: ['0x866']
+0x818 17019001 sub [0x19], [0x1]
+
+0x819 d8018fff mov [0x18], 0xfff
+0x81a 6901804c brz [0x18], 0x866                XREFS: ['0x865']
+0x81b 17018001 sub [0x18], [0x1]
+
+0x81c d8017fff mov [0x17], 0xfff
+0x81d 69017048 brz [0x17], 0x865                XREFS: ['0x864']
+0x81e 17017001 sub [0x17], [0x1]
+
+0x81f d801f074 mov [0x1f], 0x74
+0x820 d801e8dd mov [0x1e], 0x8dd
+0x821 d801d950 mov [0x1d], 0x950
+0x822 d801c010 mov [0x1c], 0x10
+0x823 d801b001 mov [0x1b], 0x1
+0x824 d601001c mov [0x10], [0x1c]
+
+
+0x825 6901c004 brz [0x1c], 0x829                XREFS: ['0x828']
+0x826 1701c001 sub [0x1c], [0x1]
+0x827 1601101e add [0x11], [0x1e]
+0x828 69000ffd brz [0x0], 0x825
+
+0x829 d601e011 mov [0x1e], [0x11]              XREFS: ['0x825']
+0x82a d6011000 mov [0x11], [0x0]
+0x82b d601c010 mov [0x1c], [0x10]
+0x82c d6010000 mov [0x10], [0x0]
+0x82d d601001c mov [0x10], [0x1c]
+
+
+0x82e 6901c004 brz [0x1c], 0x832                XREFS: ['0x831']
+0x82f 1701c001 sub [0x1c], [0x1]
+0x830 1601101e add [0x11], [0x1e]
+0x831 69000ffd brz [0x0], 0x82e
+
+0x832 d601e011 mov [0x1e], [0x11]              XREFS: ['0x82e']
+0x833 d6011000 mov [0x11], [0x0]
+0x834 d601c010 mov [0x1c], [0x10]
+0x835 d6010000 mov [0x10], [0x0]
+0x836 d601001c mov [0x10], [0x1c]
+
+
+0x837 6901c004 brz [0x1c], 0x83b                XREFS: ['0x83a']
+0x838 1701c001 sub [0x1c], [0x1]
+0x839 1601101e add [0x11], [0x1e]
+0x83a 69000ffd brz [0x0], 0x837
+
+0x83b d601e011 mov [0x1e], [0x11]              XREFS: ['0x837']
+0x83c d6011000 mov [0x11], [0x0]
+0x83d d601c010 mov [0x1c], [0x10]
+0x83e d6010000 mov [0x10], [0x0]
+0x83f d601001c mov [0x10], [0x1c]
+
+
+0x840 6901c004 brz [0x1c], 0x844                XREFS: ['0x843']
+0x841 1701c001 sub [0x1c], [0x1]
+0x842 1601101b add [0x11], [0x1b]
+0x843 69000ffd brz [0x0], 0x840
+
+0x844 d601b011 mov [0x1b], [0x11]              XREFS: ['0x840']
+0x845 d6011000 mov [0x11], [0x0]
+0x846 d601c010 mov [0x1c], [0x10]
+0x847 d6010000 mov [0x10], [0x0]
+0x848 d601001c mov [0x10], [0x1c]
+
+
+0x849 6901c004 brz [0x1c], 0x84d                XREFS: ['0x84c']
+0x84a 1701c001 sub [0x1c], [0x1]
+0x84b 1601101b add [0x11], [0x1b]
+0x84c 69000ffd brz [0x0], 0x849
+
+0x84d d601b011 mov [0x1b], [0x11]              XREFS: ['0x849']
+0x84e d6011000 mov [0x11], [0x0]
+0x84f d601c010 mov [0x1c], [0x10]
+0x850 d6010000 mov [0x10], [0x0]
+0x851 d601001c mov [0x10], [0x1c]
+
+
+0x852 6901c004 brz [0x1c], 0x856                XREFS: ['0x855']
+0x853 1701c001 sub [0x1c], [0x1]
+0x854 1601101b add [0x11], [0x1b]
+0x855 69000ffd brz [0x0], 0x852
+
+0x856 d601b011 mov [0x1b], [0x11]              XREFS: ['0x852']
+0x857 d6011000 mov [0x11], [0x0]
+0x858 d601c010 mov [0x1c], [0x10]
+0x859 d6010000 mov [0x10], [0x0]
+
+
+0x85a 6901f00a brz [0x1f], 0x864                XREFS: ['0x863']
+0x85b 1701f001 sub [0x1f], [0x1]
+0x85c 1701e01b sub [0x1e], [0x1b]
+0x85d 1701d001 sub [0x1d], [0x1]
+0x85e 1686001e add [0x860], [0x1e]
+0x85f 1686001d add [0x860], [0x1d]
+0x860 18000000 xor [0x0], [0x0]
+0x861 1786001e sub [0x860], [0x1e]
+0x862 1786001d sub [0x860], [0x1d]
+
+0x863 a6859000 jmp 0x85a
+0x864 a681c000 jmp 0x81d                       XREFS: ['0x85a']
+0x865 a6819000 jmp 0x81a                       XREFS: ['0x81d']
+0x866 a6816000 jmp 0x817                       XREFS: ['0x81a']
+0x867 a6813000 jmp 0x814                       XREFS: ['0x817']
+
+0x868 ffffffff nop                             XREFS: ['0x814']
+```
+
 ### Converting bytecode to Python
 
 ### Patching
 
 ## Scripts
+
+### Disassemble bytecode
+
+<details>
+
+<summary>show script</summary>
+
+```py
+#!/usr/bin/env python3
+
+from binaryninja import *
+
+bview = BinaryViewType.get_view_of_file('chall')
+bview.get_data_var_at(0x4038).type = bview.parse_type_string('uint32_t[0x1000]')[0]
+
+mem = bview.get_data_var_at(0x4038).value
+
+disasm = {}
+
+def process_ins(ins, offset):
+    op = ins >> 0x18
+    arg1 = (ins >> 0xc) & 0xfff
+    arg2 = ins & 0xfff
+    text = None
+    target = None
+    match op:
+        case 0x00:
+            text = 'halt'
+        case 0xd6:
+            text = f'mov [{hex(arg1)}], [{hex(arg2)}]'
+        case 0xd8:
+            text = f'mov [{hex(arg1)}], {hex(arg2)}'
+        case 0x16:
+            text = f'add [{hex(arg1)}], [{hex(arg2)}]'
+        case 0x17:
+            text = f'sub [{hex(arg1)}], [{hex(arg2)}]'
+        case 0x18:
+            text = f'xor [{hex(arg1)}], [{hex(arg2)}]'
+        case 0x69:
+            target = arg2
+            if target > 0x7ff:
+                target -= 0x1000
+            target += offset
+            text = f'brz [{hex(arg1)}], {hex(target)}'
+        case 0xa6:
+            target = arg1 + 1
+            text = f'jmp {hex(target)}'
+        case 0xf6:
+            text = f'put [{hex(arg1)}]'
+        case 0xf7:
+            text = f'get {hex(arg1)}'
+        case _:
+            text = 'nop'
+
+    if target:
+        if target not in disasm:
+            disasm[target] = {}
+            disasm[target]['text'] = ''
+            disasm[target]['xref'] = []
+        disasm[target]['xref'].append(offset)
+    if text:
+        if offset not in disasm:
+            disasm[offset] = {}
+            disasm[offset]['text'] = ''
+            disasm[offset]['xref'] = []
+        disasm[offset]['text'] = text
+
+for i in range(len(mem)):
+    process_ins(mem[i], i)
+
+disasm = dict(sorted(disasm.items()))
+
+for i in disasm:
+    addr = 0x4038 + (i * 4)
+    fulltext = disasm[i]['text']
+    if len(disasm[i]['xref']) > 0:
+        fulltext = fulltext.ljust(0x20, ' ') + 'XREFS: ' + str([hex(x) for x in disasm[i]['xref']])
+    print(hex(i), f'{mem[i]:x}', fulltext)
+    bview.set_comment_at(addr, fulltext)
+```
+
+</details>
 
 ## Flag
 
