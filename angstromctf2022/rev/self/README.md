@@ -286,6 +286,37 @@ This all suggests that the program is a virtual machine, with `data_arr` stores 
 
 ### Extracting instruction definitions
 
+We can see that all the instructions follow the same structure:
+
+```
+AA BBB CCC
+```
+
+where each character represents a hexadecimal digit.
+From here on, let instructions be represented by the following tokens:
+
+```
+opcode arg1 arg2
+```
+
+Also, let PC be the program counter, which is also the current value of RBX.
+
+Now, going through all the cases as we did with `case 0x16`, we get the following definitions:
+
+| opcode | mnemonic | long name | notes |
+|-|-|-|-|
+| 0x00 | `halt` | halt | end of program execution
+| 0x16 | `add [arg1] [arg2]` | addition | adds `data_arr[arg1]` and `data_arr[arg2]` and stores the result in `data_arr[arg1]`; preserves the most significant byte of the destination
+| 0x17 | `sub [arg1] [arg2]` | subtraction | subtracts `data_arr[arg1]` and `data_arr[arg2]` and stores the result in `data_arr[arg1]`; preserves the most significant byte of the destination
+| 0x18 | `xor [arg1] [arg2]` | exclusive-or | xors `data_arr[arg1]` and `data_arr[arg2]` and stores the result in `data_arr[arg1]`
+| 0x69 | `brz [arg1] arg2` | branch if zero | changes PC by arg2 if `data_arr[arg1]` is zero
+| 0xa6 | `jmp arg1` | jump | changes PC to `arg1`
+| 0xd6 | `mov [arg1] [arg2]` | move from memory | copies all 4 bytes from `data_arr[arg2]` to `data_arr[arg1]`
+| 0xd8 | `mov [arg1] arg2` | move absolute value | sets the least significant 20 bits of `data_arr[arg1]`; preserves the most significant byte of the destination; other bits are zeroed
+| 0xf6 | `put [arg1]` | putc | prints the character at the least significant byte of `data_arr[arg1]`
+| 0xf7 | `get [arg1]` | getc | reads a character into the least significant byte of `data_arr[arg1]`; preserves the most significant byte of the destination; other bits are zeroed
+| 0xff | `nop` | no operation | while 0xff is the only dedicated nop instruction, all opcodes not included in this table also function as a nop
+
 ### Disassembling bytecode
 
 ### Converting bytecode to Python
