@@ -322,6 +322,7 @@ Now, going through all the cases as we did with `case 0x16`, we get the followin
 ### Disassembling bytecode
 
 We can now use the Binary Ninja API to extract and disassemble the bytecode.
+Also, we can add cross references for jumps and branches to help reverse this code.
 
 Using a Python script, which can be found near the end of this writeup, we get the following assembly (after manually adding some newlines for clarity):
 
@@ -460,9 +461,238 @@ Using a Python script, which can be found near the end of this writeup, we get t
 0x868 ffffffff nop                             XREFS: ['0x814']
 ```
 
+The code before this section is of course all halts, while the code after is not sensible assembly, so it has been omitted here.
+
+As we can see, there are a number of outer loops which run 0xfff times, and some smaller inner loops.
+These outer loops are likely to be the cause of the problem, as it would take `0xfff ** 4` iterations of the inner most of these larger loops for the program to finish.
+
+Note that, on lines 0x85e, 0x85f, 0x861, and 0x862, the bytecode is self-modifying.
+In particular, these four tines all modify the instruction on 0x860, which is `xor [0x0], [0x0]` by default.
+We can see that these instructions actually modify the arguments of the xor instruction, with the first two lines setting up arguments, and the second two lines clearing them to prepare for the next iteration.
+
 ### Converting bytecode to Python
 
+Let's turn this assembly into something more readable.
+Python is great for this because it's basically English.
+It also lets us make changes easily which helps with simplifying the program.
+
+Some variable declarations are omitted from the start of these code snippets:
+
+```py
+data[0x1a] = 0xfff
+while data[0x1a] != 0:
+    data[0x1a] -= 1
+
+    data[0x19] = 0xfff
+    while data[0x19] != 0:
+        data[0x19] -= 1
+
+        data[0x18] = 0xfff
+        while data[0x18] != 0:
+            data[0x18] -= 1
+
+            data[0x17] = 0xfff
+            while data[0x17] != 0:
+                data[0x17] -= 1
+
+                data[0x1f] = 0x74
+                data[0x1e] = 0x8dd
+                data[0x1d] = 0x950
+                data[0x1c] = 0x10
+                data[0x1b] = 0x1
+                data[0x10] = 0x10
+
+                while data[0x1c] != 0:
+                    data[0x1c] -= 1
+                    data[0x11] += 0x8dd
+
+                data[0x1e] = data[0x11]
+                data[0x11] = 0
+                data[0x1c] = 0x10
+                data[0x10] = 0x10
+
+                while data[0x1c] != 0:
+                    data[0x1c] -= 1
+                    data[0x11] += data[0x1e]
+
+                data[0x1e] = data[0x11]
+                data[0x11] = 0
+                data[0x1c] = 0x10
+                data[0x10] = 0x10
+
+                while data[0x1c] != 0:
+                    data[0x1c] -= 1
+                    data[0x11] += data[0x1e]
+
+                data[0x1e] = data[0x11]
+                data[0x11] = 0
+                data[0x1c] = 0x10
+                data[0x10] = 0x10
+
+                while data[0x1c] != 0:
+                    data[0x1c] -= 1
+                    data[0x11] += data[0x1b]
+
+                data[0x1b] = data[0x11]
+                data[0x11] = 0
+                data[0x1c] = 0x10
+                data[0x10] = 0x10
+
+                while data[0x1c] != 0:
+                    data[0x1c] -= 1
+                    data[0x11] += data[0x1b]
+
+                data[0x1b] = data[0x11]
+                data[0x11] = 0
+                data[0x1c] = 0x10
+                data[0x10] = 0x10
+
+                while data[0x1c] != 0:
+                    data[0x1c] -= 1
+                    data[0x11] += data[0x1b]
+
+                data[0x1b] = data[0x11]
+                data[0x11] = 0
+                data[0x1c] = 0x10
+                data[0x10] = 0x10
+
+                while data[0x1f] != 0:
+                    data[0x1f] -= 1
+                    data[0x1e] -= data[0x1b]
+                    data[0x1d] -= 1
+                    data[0x860] += data[0x1e]
+                    data[0x860] += data[0x1d]
+                    data[(data[0x1e] + data[0x1d]) >> 0xc] ^= data[(data[0x1e] + data[0x1d]) & 0xfff]
+                    data[0x860] -= data[0x1e]
+                    data[0x860] -= data[0x1d]
+```
+
+If we look at the smaller inner loops, we can see that they're simply setting up constant variables.
+We find that these constants are the same for any iteration of the loop.
+We can actually factor these out completely, which gives us the following code:
+
+```py
+data[0x1a] = 0xfff
+while data[0x1a] != 0:
+    data[0x1a] -= 1
+
+    data[0x19] = 0xfff
+    while data[0x19] != 0:
+        data[0x19] -= 1
+
+        data[0x18] = 0xfff
+        while data[0x18] != 0:
+            data[0x18] -= 1
+
+            data[0x17] = 0xfff
+            while data[0x17] != 0:
+                data[0x17] -= 1
+
+                data[0x1f] = 0x74
+                data[0x1e] = 0x8dd
+                data[0x1d] = 0x950
+                data[0x1b] = 0x1
+                data[0x10] = 0x10
+
+                data[0x11] += 0x8dd0
+
+                data[0x11] *= 0x100
+
+                data[0x1e] = data[0x11]
+
+                data[0x11] = 0x10
+
+                data[0x11] *= 0x100
+
+                data[0x1b] = data[0x11]
+
+                data[0x11] = 0
+                data[0x1c] = 0x10
+                data[0x10] = 0x10
+
+                while data[0x1f] != 0:
+                    data[0x1f] -= 1
+                    data[0x1e] -= data[0x1b]
+                    data[0x1d] -= 1
+                    print(hex(data[0x1e]), hex(data[0x1d]))
+                    print(hex((data[0x1e] + data[0x1d]) >> 0xc), hex(data[(data[0x1e] + data[0x1d]) >> 0xc]))
+                    print()
+                    data[(data[0x1e] + data[0x1d]) >> 0xc] ^= data[(data[0x1e] + data[0x1d]) & 0xfff]
+```
+
+Now we can see that the inneer-most loop is simply xoring data after it with some constant values.
+Note that the second argument to xor is unchanged, and the first argument is always the result of the previous.
+Since `A ^ B ^ B = A`, and we are xoring an odd number of times, all this code does the equivalent of xoring the specified area once.
+Therefore, we can factor out the outer loops to get the following simplified code:
+
+```py
+data[0x1f] = 0x74
+data[0x1e] = 0x8dd000
+data[0x1d] = 0x950
+
+while data[0x1f] != 0:
+    data[0x1f] -= 1
+
+    data[0x1e] -= 0x1000
+    data[0x1d] -= 1
+    data[(data[0x1e] + data[0x1d]) >> 0xc] ^= data[(data[0x1e] + data[0x1d]) & 0xfff]
+    print(hex(data[0x1e]), hex(data[0x1d]))
+    print(hex((data[0x1e] + data[0x1d]) >> 0xc), hex(data[(data[0x1e] + data[0x1d]) >> 0xc]))
+    print()
+```
+
+Running this gives is more assembly code after the nop at the end of what we already analyzed.
+We could disassemble this and reverse it by repeating the above steps.
+However, there are no more large loops, and there is a `putc()` call that does not require user input.
+Instead, let's try to run the program with this new code.
+
 ### Patching
+
+To bypass the loops, one option is to change every loop to have a limit of 1 iteration, so we only perform the first xor and skip the extra ones which only serve to waste time.
+Alternatively, we could perform the xor ourselves and include the result in the patch, then jump past all the loops directly to the second stage.
+I went with the later method, but both are fine.
+
+```py
+from data_arr import data
+
+data[0x1f] = 0x74
+data[0x1e] = 0x8dd000
+data[0x1d] = 0x950
+
+while data[0x1f] != 0:
+    data[0x1f] -= 1
+    data[0x1e] -= 0x1000
+    data[0x1d] -= 1
+    data[(data[0x1e] + data[0x1d]) >> 0xc] ^= data[(data[0x1e] + data[0x1d]) & 0xfff]
+
+from pwn import p32
+
+raw = b''
+
+for i in range(len(data)):
+    if i == 0x800:
+        raw += p32(0xa6869000)
+        continue
+    if i > 0x8db:
+        break
+    raw += p32(data[i])
+
+print(raw)
+```
+
+The first half of the patch script is taken from our simplified Python version of the disassembled bytecode, which performs the xor.
+In the second part, we replace the instruction at 0x800 with a jump to the second stage, skipping the first stage loops.
+This script will print the raw bytes of the patch for us.
+
+To apply this patch, we can run the script in Binary Ninja, followed by this line:
+
+```py
+bv.get_data_var_at(0x403c).value = raw
+```
+
+This will replace the entire array with our patched code.
+
+If we now run the patched program, it immediately prints the flag.
 
 ## Scripts
 
@@ -544,6 +774,54 @@ for i in disasm:
         fulltext = fulltext.ljust(0x20, ' ') + 'XREFS: ' + str([hex(x) for x in disasm[i]['xref']])
     print(hex(i), f'{mem[i]:x}', fulltext)
     bview.set_comment_at(addr, fulltext)
+```
+
+</details>
+
+### Patch binary
+
+<details>
+
+<summary>show script</summary>
+
+```py
+#!/usr/bin/env python3
+
+from binaryninja import *
+
+bview = BinaryViewType.get_view_of_file('chall')
+bview.get_data_var_at(0x4038).type = bview.parse_type_string('uint32_t[0x1000]')[0]
+
+data = bview.get_data_var_at(0x4038).value
+
+data[0x1f] = 0x74
+data[0x1e] = 0x8dd000
+data[0x1d] = 0x950
+
+while data[0x1f] != 0:
+    data[0x1f] -= 1
+    data[0x1e] -= 0x1000
+    data[0x1d] -= 1
+    data[(data[0x1e] + data[0x1d]) >> 0xc] ^= data[(data[0x1e] + data[0x1d]) & 0xfff]
+
+from pwn import p32
+
+raw = b''
+
+for i in range(len(data)):
+    if i == 0x800:
+        raw += p32(0xa6869000)
+        continue
+    if i > 0x8db:
+        break
+    raw += p32(data[i])
+
+print(raw)
+
+# patch in binary ninja:
+'''
+bv.get_data_var_at(0x403c).value = raw
+'''
 ```
 
 </details>
