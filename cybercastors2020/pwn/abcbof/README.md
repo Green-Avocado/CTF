@@ -4,7 +4,7 @@
 
 We can disassemble the binary and list all functions using a tool like Radare2.
 
-```
+```asm
 [greenavocado@greenavocado-pc abcbof]$ r2 abcbof
  -- Beer in mind.
 [0x00400640]> aaa
