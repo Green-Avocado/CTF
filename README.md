@@ -4,6 +4,7 @@ This repository contains a collection of writeups for CTF challenges.
 
 ### 2022
 
+- [Maple CTF](./maplectf2022)
 - [DiceCTF @ HOPE](./hopedicectf2022)
 - [Cyber Apocalypse](./cyberapocalypse2022)
 - [angstromCTF](./angstromctf2022)
