@@ -25,7 +25,7 @@ I was very pleased to read about the solutions that other competitors found.
     RWX:      Has RWX segments
 ```
 
-### Main Disassembly
+### Main Decompilation
 
 ```c
 ulong main(void) {
