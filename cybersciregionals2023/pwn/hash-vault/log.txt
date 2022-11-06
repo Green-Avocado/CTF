@@ -1,0 +1,10 @@
+-> %  nc 10.0.2.32 10004 
+Welcome to Hash Vault!
+
+Enter the password to open it: PuMp_uP_tH3_vAu1TaG3
+PuMp_uP_tH3_vAu1TaG3
+
+Correct! Here are the vault contents:
+
+Encryption key: 58313fd0e4788190971daf9e72552ef5
+

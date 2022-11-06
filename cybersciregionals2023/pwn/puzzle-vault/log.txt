@@ -1,0 +1,8 @@
+-> % nc 10.0.2.32 10003
+You are accessing the Puzzle Vault
+
+What is the password?: ThereIsNoFaultInThisVault
+
+Correct! Here are the vault contents:
+
+Encryption key: 12ae03185e820e1e29fc00d68c12714c
