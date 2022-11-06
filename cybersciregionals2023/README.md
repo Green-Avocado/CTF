@@ -10,5 +10,5 @@ https://cybersecuritychallenge.ca/
 
 ### rev
 
-- [Puzzle Vault](./pwn/puzzle-vault)
-- [Hash Vault](./pwn/hash-vault)
+- [Puzzle Vault](./rev/puzzle-vault)
+- [Hash Vault](./rev/hash-vault)
