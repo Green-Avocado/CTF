@@ -2,6 +2,10 @@
 
 This repository contains a collection of writeups for CTF challenges.
 
+### 2023
+
+- [Sapling CTF](./saplingctf2023)
+
 ### 2022
 
 - [CyberSci Regionals](./cybersciregionals2023)
