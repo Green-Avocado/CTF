@@ -33,7 +33,7 @@ We can pass the `arglen` check in `main` by adding a null byte to our input afte
 We need to include both options to satisfy `arglen == 3`, as normally the third character would be a
 newline, however we cannot include one as this would end our input.
 
-After the null byte, we can include around 256 null bytes.
+After the null byte, we can include around 256 nop instructions.
 This nopsled ensures that the code executed by the macro will eventually reach our shellcode.
 After the nopsled, we can write a standard `execve("/bin/sh", NULL, NULL)` shellcode on the buffer.
 
