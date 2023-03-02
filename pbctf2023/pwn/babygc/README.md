@@ -180,7 +180,7 @@ function fakeObj(addr) {
     return object_arr[0];
 }
 
-o = {a: 1.1}
+o = {a: 1.1};
 
 print(o == fakeObj(addrOf(o)));
 ```
@@ -221,7 +221,7 @@ print(describe(fake));
 ```
 
 The butterfly of `fake` should be the address of `victim`.
-The type of `fake` should be a `CopyOnWriteArrayWithDouble`.
+The type of `fake` should be a CopyOnWriteArrayWithDouble.
 
 ### Arbitrary Read/Write
 
