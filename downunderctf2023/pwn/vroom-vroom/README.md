@@ -1,8 +1,33 @@
 # vroom vroom
 
+Disclaimer:
+I did not solve this challenge during the CTF.
+While I was able to identify and trigger the vulnerability, I was not able to turn this vulnerability into an out-of-bounds access without hitting SIGTRAPs as I was using older V8 exploitation techniques.
+linz04 and \_icecreamman on the DownUnderCTF Discord were very helpful in helping me understand the changes to the typer and how to bypass them, as well as sradley's solution script.
+In this writeup, the JIT-sprayed shellcode and trigger for the vulnerability are those from sradley's solution (https://github.com/DownUnderCTF/Challenges_2023_Public/blob/main/pwn/return-to-monke/solve/exploit.ks).
+
 ## Challenge
 
+The Chromium "V8" JavaScript engine, with a patch that:
+- changes the type of a 64-bit float result from a WASM function from a Number to a PlainNumber
+- removes a Turbo typer hardening bounds check from the `Array.at` method
+
 ## Solution
+
+Unlike a Number, a PlainNumber cannot be a NaN.
+The patch will cause the typer to believe that the result of a WASM function that returns a float can never be NaN and will optimize the JITed function based on this assumption.
+If we can convince the typer that an index will always be in-bounds of an array, we can bypass this bounds check.
+We have to use the `Array.at` method for our out-of-bounds accesses, as the patch also removes an additional bounds check from this method.
+
+Using this out-of-bounds access, we can create addrOf and fakeObj primitives.
+We can also leak the map of an object.
+
+Using these primitives and the leaked map, we can create a fake object with a controlled properties pointer.
+By changing the value of this properties pointer, we can read and write to arbitrary addresses on the JSHeap.
+
+Using this arbitrary read and write, we can change the entrypoint of a JITed function to point at our shellcode, which is smuggled in as floats.
+
+By calling this function, we can execute our shellcode and spawn a shell.
 
 ## Exploit
 
