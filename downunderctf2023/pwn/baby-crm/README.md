@@ -2,7 +2,32 @@
 
 ## Challenge
 
+A C++ application which lets us add and manage customers and orders.
+
 ## Solution
+
+The help messages will free an uninitialized pointer from the stack.
+We can use this to free a customer.
+
+If we then create an order for a different customer, the order description with overlap with the freed customer.
+
+If we again free the same customer and create a new one, it will overlap with the freed customer and the order.
+
+Using the order, we can read and write data in the customer struct.
+
+We can achieve an arbitrary read/write by creating a fake vector or orders, allowing us to manipulate the address of a fake order description.
+
+We can leak the libc address by creating a large string that gets freed into a fastbin, then reading the pointer.
+
+Unfortunately, malloc and free hooks are removed in this version.
+
+Leaking a stack pointer through the libc environ is an option
+We could use this to write a ropchain on the stack.
+Unfortunately, I could not get this to work on the remote.
+
+Instead, I leaked the ld-linux address from a pointer in libc.
+This allowed me to find the address of `_dl_fini`, which could be used to determine the xor key used in the libc `__exit_funcs`.
+From there, I overwrite one of the exit handlers with `system("/bin/sh")` to spawn a shell.
 
 ## Exploit
 
