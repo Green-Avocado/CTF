@@ -2,7 +2,27 @@
 
 ## Challenge
 
+The Firefox "SpiderMonkey" JavaScript engine, with a patch that adds a `monke` method to objects.
+
 ## Solution
+
+The new `monke` method allows us to read and write the shape pointer of an object.
+This allows for trivial type confusion.
+
+By changing the shape of an array to the shape of an object, we can use the object properties to overwrite the length of the array.
+We can then change the shape back to an array, allowing us to use the array as normal, but with an increased length, which we can use to read and write out-of-bounds.
+
+We can use this out-of-bound access to create the addrOf primitive by writing the pointer of an object in one array, then reading the pointer to an object as a float from an overlapping array.
+We can use this out-of-bound access to create the fakeObj primitive by writing the pointer to a fake object as a float in one array, then reading the value as an object from an overlapping array.
+
+We can also use the out-of-bounds access to overwrite the backing store of a typed array, allowing us to read and write to arbitrary addresses.
+
+This can be used to control RIP by overwriting the entrypoint of a JITed function, or overwriting the class operations of an object.
+The exploit script below uses the latter approach.
+
+Shellcode can be smuggled into executable memory as float constants in a JITed function.
+
+By changing RIP to point at these constants, we can execute arbitrary shellcode and spawn a shell.
 
 ## Exploit
 
