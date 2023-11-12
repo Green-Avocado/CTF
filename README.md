@@ -4,6 +4,7 @@ This repository contains a collection of writeups for CTF challenges.
 
 ### 2023
 
+- [HKCERT](./hkcert2023)
 - [ECSC](./ecsc2023)
 - [ASIS CTF Qualifiers](./asisquals2023)
 - [DownUnderCTF](./downunderctf2023)

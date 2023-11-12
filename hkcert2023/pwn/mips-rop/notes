@@ -1,0 +1,65 @@
+  41f650:       02002025        move    a0,s0
+  41f654:       8fbf0024        lw      ra,36(sp)
+  41f658:       8fb00020        lw      s0,32(sp)
+  41f65c:       03e00008        jr      ra
+
+  40c808:       8fbf00dc        lw      ra,220(sp)
+  40c80c:       02201025        move    v0,s1
+  40c810:       8fb300d8        lw      s3,216(sp)
+  40c814:       8fb200d4        lw      s2,212(sp)
+  40c818:       8fb100d0        lw      s1,208(sp)
+  40c81c:       8fb000cc        lw      s0,204(sp)
+  40c820:       03e00008        jr      ra
+
+  40368c:       8fb9002c        lw      t9,44(sp)
+  403690:       03c03025        move    a2,s8
+  403694:       02602825        move    a1,s3
+  403698:       0320f809        jalr    t9
+
+  40b8d8:       8fbf00f4        lw      ra,244(sp)
+  40b8dc:       02401025        move    v0,s2
+  40b8e0:       8fb500f0        lw      s5,240(sp)
+  40b8e4:       8fb400ec        lw      s4,236(sp)
+  40b8e8:       8fb300e8        lw      s3,232(sp)
+  40b8ec:       8fb200e4        lw      s2,228(sp)
+  40b8f0:       8fb100e0        lw      s1,224(sp)
+  40b8f4:       8fb000dc        lw      s0,220(sp)
+  40b8f8:       03e00008        jr      ra
+
+  406a08:       02c02825        move    a1,s6
+  406a0c:       8fb90018        lw      t9,24(sp)
+  406a10:       03c02025        move    a0,s8
+  406a14:       0320f809        jalr    t9
+
+  43f52c:       8fbf0054        lw      ra,84(sp)
+  43f530:       8fb60050        lw      s6,80(sp)
+  43f534:       8fb5004c        lw      s5,76(sp)
+  43f538:       8fb40048        lw      s4,72(sp)
+  43f53c:       8fb30044        lw      s3,68(sp)
+  43f540:       8fb20040        lw      s2,64(sp)
+  43f544:       8fb1003c        lw      s1,60(sp)
+  43f548:       8fb00038        lw      s0,56(sp)
+  43f54c:       03e00008        jr      ra
+
+  40a9c4:       8fb90028        lw      t9,40(sp)
+  40a9c8:       02403025        move    a2,s2
+  40a9cc:       afa20014        sw      v0,20(sp)
+  40a9d0:       02473821        addu    a3,s2,a3
+  40a9d4:       afa40018        sw      a0,24(sp)
+  40a9d8:       24a5002c        addiu   a1,a1,44
+  40a9dc:       afb6001c        sw      s6,28(sp)
+  40a9e0:       02602025        move    a0,s3
+  40a9e4:       8fa2002c        lw      v0,44(sp)
+  40a9e8:       0320f809        jalr    t9
+
+  400824:       8f82806c        lw      v0,-32660(gp)
+  400828:       0040c825        move    t9,v0
+  40082c:       0411212c        bal     408ce0 <_IO_gets>
+  400830:       00000000        nop
+  400834:       8fdc0010        lw      gp,16(s8)
+  400838:       00001025        move    v0,zero
+  40083c:       03c0e825        move    sp,s8
+  400840:       8fbf0064        lw      ra,100(sp)
+  400844:       8fbe0060        lw      s8,96(sp)
+  400848:       27bd0068        addiu   sp,sp,104
+  40084c:       03e00008        jr      ra
